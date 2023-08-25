@@ -12,12 +12,15 @@ class Client;
 class Channel
 {
 	private:
+		std::vector<Client *> op;
+		std::vector<Client *> invited;
 		std::string name;
 		std::string topic;
 		std::string key;
 		size_t limit;
 
-		std::vector<Client *> invited;
+		std::vector<char> setmodes;
+		std::vector<char> unsetmodes;
 		bool invite_only;
 		bool use_key;
 		bool topic_set;
@@ -40,7 +43,10 @@ class Channel
 		bool getLimitSet(void) const;
 		bool getUseKey(void) const;
 		std::vector<Client *> getInvited(void) const;
+		std::vector<char> getSetModes(void) const;
+		std::vector<char> getUnsetModes(void) const;
 
+		void setOperator(const Client &client);
 		void setTopic(const std::string &topic);
 		void setInviteOnly(bool value);
 		void setKey(const std::string &key);
@@ -55,6 +61,8 @@ class Channel
 
 		void printInfo(void);
 		bool checkKey(const std::string &key);
+		bool is_operator(const Client &client);
+		bool is_invited(const std::string &nickname);
 };
 
 #endif

@@ -331,6 +331,26 @@ std::string Server::getHostname(void) const
 	return (this->hostname);
 }
 
+Channel *Server::getChannel(const std::string &name)
+{
+	for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
+	{
+		if (it->first == name)
+			return (it->second);
+	}
+	return (NULL);
+}
+
+Client *Server::getClient(const std::string &nickname)
+{
+	for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		if (it->second->getNickname() == nickname)
+			return (it->second);
+	}
+	return (NULL);
+}
+
 /*//////////////////////////////////////////////////////////////////////////////*/
 /*//                                                                          //*/
 /*//                                SENDER                                    //*/
