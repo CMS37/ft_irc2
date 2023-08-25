@@ -325,6 +325,11 @@ time_t Server::getStartTime(void) const
 	return (this->startTime);
 }
 
+std::string Server::getHostname(void) const
+{
+	return (this->hostname);
+}
+
 /*//////////////////////////////////////////////////////////////////////////////*/
 /*//                                                                          //*/
 /*//                                SENDER                                    //*/
