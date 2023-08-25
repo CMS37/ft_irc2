@@ -2,10 +2,9 @@
 #include "utils.hpp"
 #include <cstdio>
 
-
 bool running;
 
-Server::Server()
+Server::Server(): hostname("irc_server")
 {
 
 }
@@ -135,7 +134,7 @@ void Server::read_client_data(size_t i)
 		std::vector<std::string> lines = split(sbuf, '\n');
 
 		std::cout << "================================\n";
-		std::cout << "recvieced: " << sbuf << std::endl;
+		std::cout << "     <Recvieced string>\n" << sbuf << std::endl;
 		std::cout << "================================\n";
 
 		for(size_t j = 0; j < lines.size(); j++)
@@ -245,6 +244,21 @@ void Server::run(void)
 	}
 }
 
+void	Server::registrate(Client &cli)
+{
+	if(!cli.getNickname().empty()
+	&& !cli.getUsername().empty()
+	&& !cli.getRealname().empty()
+	&& cli.getIsPasswordAllowed()
+	&& !cli.getIsRegistered())
+	{
+		cli.setIsRegistered(true);
+		std::string msg = ":Welcome to the " + hostname + " Network " + cli.getNickname() + "!";
+		send_message_to_client_with_code(cli, "001", msg);
+	}
+}
+
+
 /*//////////////////////////////////////////////////////////////////////////////*/
 /*//                                                                          //*/
 /*//                                SETTER                                    //*/
@@ -321,6 +335,20 @@ void Server::send_message_to_fd(int fd, std::string message)
 {
 	std::cout << ">>>send_message_to_fd: " << message << "\n\n";
 	send(fd, message.c_str(), message.length(), 0);
+}
+
+void Server::send_message_to_client_with_code(Client &cli, std::string code, std::string message)
+{
+	// std::string msg = hostname + " " + code + " " + cli.getNickname() + " " + message + "\n";
+
+	std::string msg;
+	msg.append(hostname + " ");
+	msg.append(code + " ");
+	msg.append(cli.getNickname() + " ");
+	msg.append(message + "\n");
+
+	std::cout << "sending msg : " << msg << std::endl;
+	send_message_to_fd(cli.getFd(), msg);
 }
 
 void Server::send_message_to_channel(std::string channel_name, std::string message)
