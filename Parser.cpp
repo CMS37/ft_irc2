@@ -120,7 +120,7 @@ void Parser::cmd_cap()
         this->_server.send_message_to_fd(this->_client.getFd(), "CAP * LS :End of CAP LS negotiation\n");
     }
     else
-        throw std::invalid_argument("Wrong argument");
+        throw std::invalid_argument("Wrong argument\n");
 }
 
 void Parser::cmd_join()
