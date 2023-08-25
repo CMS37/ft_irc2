@@ -194,7 +194,8 @@ bool Server::check_channel(const std::string &channel)
 {
 	for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 	{
-		if (it->first == channel)
+		//채널이름넣어줄때 널문자도 넣어줘야대나....길이가다르네..
+		if (!strncmp(it->first.c_str(), channel.c_str(),channel.length()))
 			return (true);
 	}
 	return (false);

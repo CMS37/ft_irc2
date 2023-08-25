@@ -56,7 +56,16 @@ void Parser::what_is_this()
         else if(this->_tokens[0] == "USER")
             cmd_user();
         else if(this->_tokens[0] == "MODE")
-            cmd_mode(_tokens[1]);
+        {
+			std::string modeArgs;
+			for (unsigned long i = 1; i < _tokens.size(); i++)
+			{
+				modeArgs += _tokens[i];
+				if (i < _tokens.size() - 1)
+        		    modeArgs += " ";
+			}
+			cmd_mode(modeArgs);
+		}
         else if(this->_tokens[0] == "QUIT")
             cmd_quit();
         else if(this->_tokens[0] == "PASS")
@@ -218,25 +227,24 @@ void Parser::cmd_mode(const std::string &mode)
 				if (_server.check_channel(*it))
 					target = *it;
 				else
- 					throw std::invalid_argument("Can't find channel");
-				break;
+ 					throw std::invalid_argument(":Can't find channel\n");
+                break;
 			case '-':
 			case '+':
 				mode_str = *it;
-				break;
+                break;
 			default:
 				if (_server.check_nickname(*it))
 					user = *it;
 				else
-                       throw std::invalid_argument("Can't find user");
-				break;
+                       throw std::invalid_argument(":Can't find user\n");
+                break;
 		}
 	}
-
 	size_t pos = mode_str.find('-');
 	if (pos != std::string::npos)
 	{
-		tmp = mode_str.substr(1, pos);
+		tmp = mode_str.substr(1, pos - 1);
 		tmp2 = mode_str.substr(pos + 1);
 	}
 	else
@@ -245,11 +253,11 @@ void Parser::cmd_mode(const std::string &mode)
 		tmp2 = "";
 	}
 	// testcode
-	std::cout << "target: " << target << std::endl;
-	std::cout << "mode: " << mode_str << std::endl;
-	std::cout << "tmp: " << tmp << std::endl;
-	std::cout << "tmp2: " << tmp2 << std::endl;
-	std::cout << "user: " << user << std::endl;
+	std::cout << ": target: " << target << std::endl;
+	std::cout << ": mode: " << mode_str << std::endl;
+	std::cout << ": tmp: " << tmp << std::endl;
+	std::cout << ": tmp2: " << tmp2 << std::endl;
+	std::cout << ": user: " << user << std::endl;
 }
 
 void Parser::cmd_pass()
