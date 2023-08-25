@@ -9,8 +9,10 @@ SRCS =	main.cpp \
 		Client.cpp \
 		Server.cpp \
 		Parser.cpp \
+		mode.cpp \
 		Channel.cpp \
-		utils.cpp
+		utils.cpp \
+
 
 OBJS := ${SRCS:%.cpp=${OBJS_DIR}/%.o}
 
