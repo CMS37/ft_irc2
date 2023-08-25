@@ -1,6 +1,4 @@
-#include"utils.hpp"
 #include"Parser.hpp"
-
 // /list
 // /join
 // /part
@@ -292,9 +290,10 @@ void Parser::cmd_help()
 void Parser::cmd_time()
 {
 	std::string msg;
+    time_t startTime = _server.getStartTime();
 
 	if(this->_tokens.size() == 2)
-		msg = ctime(_server.getStartTime()) + "; check the time on the server \"" + _server.getHostname() + "\"";
+		msg = std::string(ctime(&startTime)) + "; check the time on the server \"" + _server.getHostname() + "\"";
 	else
 		//유저가 서버에 접속한시간?  (<USER> TIME <SERVER>)?!
 	this->_server.send_message_to_fd(this->_client.getFd(), msg);

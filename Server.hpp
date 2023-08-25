@@ -70,6 +70,7 @@ class Server
 		std::vector<struct pollfd> getFds(void) const;
 		std::map<int, Client *> getClients(void) const;
 		std::map<std::string, Channel *> &getChannels(void);
+		std::string getHostname(void) const;
 
 		void send_message_to_fd(int fd, std::string message);
 		void send_message_to_channel(std::string channel, std::string message);
