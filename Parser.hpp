@@ -41,7 +41,7 @@ class Parser
         void cmd_invite();
         void cmd_kick();
         void cmd_topic();
-        void cmd_mode();
+        void cmd_mode(const std::string &mode);
         void cmd_exit();
         void cmd_pass();
 
