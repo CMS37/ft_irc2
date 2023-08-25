@@ -58,7 +58,7 @@ void Parser::what_is_this()
         else if(this->_tokens[0] == "USER")
             cmd_user();
         else if(this->_tokens[0] == "MODE")
-            cmd_mode();
+            cmd_mode(_tokens[1]);
         else if(this->_tokens[0] == "QUIT")
             cmd_quit();
         else if(this->_tokens[0] == "PASS")
@@ -119,7 +119,7 @@ void Parser::cmd_cap()
 {
     if(this->_tokens[1] == "LS")
     {
-        this->_server.send_message_to_fd(this->_client.getFd(), "CAP * LS :End of CAP LS negotiation");
+        this->_server.send_message_to_fd(this->_client.getFd(), "CAP * LS :End of CAP LS negotiation\n");
     }
     else
         throw std::invalid_argument("Wrong argument");
@@ -128,7 +128,7 @@ void Parser::cmd_cap()
 void Parser::cmd_join()
 {
     if(!this->_client.getIsRegistered())
-        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered");
+        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
 
     if (this->_tokens.size() == 2) // /join #channel
         this->_client.joinChannel(this->_tokens[1], "");
@@ -196,9 +196,60 @@ void Parser::cmd_user()
 
 }
 
-void Parser::cmd_mode()
-{
 
+// token[0] == mode token[1] == "#irssi +o min"으로 넘긴다는 가정하에
+void Parser::cmd_mode(const std::string &mode)
+{
+	std::string tmp;
+	std::string tmp2;
+	std::string user;
+	std::string target;
+	std::string mode_str;
+	std::vector<std::string> str = split(mode, ' ');
+	std::map<std::string, bool> mode_map;
+
+	for (std::vector<std::string>::iterator it = str.begin(); it != str.end(); ++it)
+	{
+		switch ((*it)[0])
+		{
+			case '&':
+			case '!':
+			case '#':
+				if (_server.check_channel(*it))
+					target = *it;
+				else
+ 					throw std::invalid_argument("Can't find channel");
+				break;
+			case '-':
+			case '+':
+				mode_str = *it;
+				break;
+			default:
+				if (_server.check_nickname(*it))
+					user = *it;
+				else
+                       throw std::invalid_argument("Can't find user");
+				break;
+		}
+	}
+
+	size_t pos = mode_str.find('-');
+	if (pos != std::string::npos)
+	{
+		tmp = mode_str.substr(1, pos);
+		tmp2 = mode_str.substr(pos + 1);
+	}
+	else
+	{
+		tmp = mode_str.substr(1);
+		tmp2 = "";
+	}
+	// testcode
+	std::cout << "target: " << target << std::endl;
+	std::cout << "mode: " << mode_str << std::endl;
+	std::cout << "tmp: " << tmp << std::endl;
+	std::cout << "tmp2: " << tmp2 << std::endl;
+	std::cout << "user: " << user << std::endl;
 }
 
 void Parser::cmd_pass(const std::string &password)
@@ -207,7 +258,7 @@ void Parser::cmd_pass(const std::string &password)
         throw std::invalid_argument("Password is empty");
     if (password != _server.getPassword())
         throw std::invalid_argument("Wrong password");
-    // _is_pass_server = true;
+    
 }
 
 void Parser::cmd_msg()
@@ -233,7 +284,13 @@ void Parser::cmd_help()
 
 void Parser::cmd_time()
 {
+	std::string msg;
 
+	if(this->_tokens.size() == 2)
+		msg = ctime(_server.getStartTime()) + "; check the time on the server \"" + _server.getHostname() + "\"";
+	else
+		//유저가 서버에 접속한시간?  (<USER> TIME <SERVER>)?!
+	this->_server.send_message_to_fd(this->_client.getFd(), msg);
 }
 
 void Parser::cmd_version()
