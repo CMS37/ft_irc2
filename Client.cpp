@@ -1,12 +1,12 @@
 #include "Client.hpp"
 
-Client::Client(int fd, Server &server) : fd(fd), server(server), is_registered(false)
+Client::Client(int fd, Server &server) : fd(fd), server(server), is_registered(false), is_password_allowed(false)
 {
 }
 
 Client::~Client() {}
 
-Client::Client(const Client &f) : fd(f.fd), server(f.server), is_registered(f.is_registered), nickname(f.nickname)
+Client::Client(const Client &f) : fd(f.fd), server(f.server), is_registered(f.is_registered), is_password_allowed(f.is_password_allowed), nickname(f.nickname)
 {
 }
 
@@ -81,6 +81,17 @@ void Client::setRealname(const std::string &realname)
 	this->realname = realname;
 }
 
+void Client::setIsRegistered(bool is_registered)
+{
+	this->is_registered = is_registered;
+}
+
+void Client::setIsPasswordAllowed(bool is_password_allowed)
+{
+	this->is_password_allowed = is_password_allowed;
+}
+
+
 /*//////////////////////////////////////////////////////////////////////////////*/
 /*//                                                                          //*/
 /*//                                GETTER                                    //*/
@@ -102,7 +113,33 @@ std::string Client::getNickname(void) const
 	return (this->nickname);
 }
 
+std::string Client::getUsername(void) const
+{
+	return (this->username);
+}
+
+std::string Client::getHostname(void) const
+{
+	return (this->hostname);
+}
+
+std::string Client::getServername(void) const
+{
+	return (this->servername);
+}
+
+std::string Client::getRealname(void) const
+{
+	return (this->realname);
+}
+
+bool Client::getIsPasswordAllowed(void) const
+{
+	return (this->is_password_allowed);
+}
+
 bool Client::getIsRegistered(void) const
 {
 	return (this->is_registered);
 }
+

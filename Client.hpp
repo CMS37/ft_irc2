@@ -14,7 +14,10 @@ class Client
 	private:
 		int fd;
 		Server &server;
+
 		bool is_registered;
+		bool is_password_allowed;
+		
 		std::string nickname;
 		std::string username;
 		std::string hostname;
@@ -35,14 +38,21 @@ class Client
 
 		int getFd(void) const;
 		Server &getServer(void) const;
-		std::string getNickname(void) const;
 		bool getIsRegistered(void) const;
+		bool getIsPasswordAllowed(void) const;
+		std::string getNickname(void) const;
+		std::string getUsername(void) const;
+		std::string getHostname(void) const;
+		std::string getServername(void) const;
+		std::string getRealname(void) const;
 
 		void setNickname(const std::string &nickname);
 		void setUsername(const std::string &username);
 		void setHostname(const std::string &hostname);
 		void setServername(const std::string &servername);
 		void setRealname(const std::string &realname);
+		void setIsRegistered(bool is_registered);
+		void setIsPasswordAllowed(bool is_password_allowed);
 };
 
 #endif

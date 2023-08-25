@@ -52,7 +52,7 @@ void Parser::what_is_this()
         else if(this->_tokens[0] == "JOIN")
             cmd_join();
         else if(this->_tokens[0] == "NICK")
-            cmd_nick(_tokens[1]);
+            cmd_nick();
         else if(this->_tokens[0] == "PING")
             cmd_ping();
         else if(this->_tokens[0] == "USER")
@@ -62,7 +62,7 @@ void Parser::what_is_this()
         else if(this->_tokens[0] == "QUIT")
             cmd_quit();
         else if(this->_tokens[0] == "PASS")
-            cmd_pass(_tokens[1]);
+            cmd_pass();
     //     else if(this->_tokens[0] == "LIST")
     //         cmd_list();
     //     else if(this->_tokens[0] == "PART")
@@ -153,21 +153,21 @@ void Parser::cmd_list()
     this->_server.showChannels();
 }
 
-void Parser::cmd_nick(const std::string &nick)
+void Parser::cmd_nick()
 {
-    std::string nickname = nick;
+    std::string nickname(this->_tokens[1]);
 
-    if (nickname.empty())
-        throw std::invalid_argument("Nickname is empty");
-    if (this->_server.check_nickname(nickname))
+    if (this ->_tokens.size() != 2)
+		this->_server.send_message_to_client_with_code(this->_client, "461", "NICK : wrong number of arguments");
+	else if (contains(nickname, ":/\0"))
+		this->_server.send_message_to_client_with_code(this->_client, "432", nickname + " :Erroneus nickname");
+	else if (this->_server.check_nickname(nickname))
+		this->_server.send_message_to_client_with_code(this->_client, "433", nickname + " :Nickname is already in use");
+	else
     {
-        nickname = nickname + "_";
-        while (this->_server.check_nickname(nickname))
-            nickname = nickname + "_";
-        if (nickname.length() > 9)
-            throw std::invalid_argument("Nickname is too long");
-	}   
-    this->_client.setNickname(this->_tokens[1]);
+        this->_client.setNickname(nickname);
+		this->_server.registrate(this->_client);
+    }
 }
 
 void Parser::cmd_ping()
@@ -177,13 +177,15 @@ void Parser::cmd_ping()
 
 void Parser::cmd_user()
 {
-    if(this->_tokens.size() != 5)
-        throw std::invalid_argument("Wrong number of arguments");
+    if(this->_tokens.size() < 5)
+        this->_server.send_message_to_client_with_code(this->_client, "461", "USER :Not enough parameters");
 
     this->_client.setUsername(this->_tokens[1]);
     this->_client.setHostname(this->_tokens[2]);
     this->_client.setServername(this->_tokens[3]);
     this->_client.setRealname(this->_tokens[4]);
+
+    this->_server.registrate(this->_client);
 
     //이후 호스트네임 확인작업 하는듯, 만약 적절한 거 못 찾으면 ip 주소로 대체
     //해당 내용은 클라이언트에 메세지 줌
@@ -201,13 +203,18 @@ void Parser::cmd_mode()
 
 }
 
-void Parser::cmd_pass(const std::string &password)
+void Parser::cmd_pass()
 {
-    if (password.empty())
-        throw std::invalid_argument("Password is empty");
+    if(this->_tokens.size() != 2)
+        this->_server.send_message_to_client_with_code(this->_client, "461", "PASS :Not enough parameters");
+    else if(this->_client.getIsRegistered())
+        this->_server.send_message_to_client_with_code(this->_client, "462", ":You may not reregister");
+
+    std::string password = parse_pw(this->_tokens[1]);
     if (password != _server.getPassword())
-        throw std::invalid_argument("Wrong password");
-    // _is_pass_server = true;
+        this->_server.send_message_to_client_with_code(this->_client, "464", ":Password incorrect");
+    else
+        this->_client.setIsPasswordAllowed(true);
 }
 
 void Parser::cmd_msg()

@@ -36,6 +36,8 @@ class Server
 		std::map<std::string, Channel *> channels;
 		std::string password;
 
+		const std::string hostname;
+
 	public:	
 		Server();
 		~Server();
@@ -53,6 +55,7 @@ class Server
 		void	addChannel(const std::string &name, const std::string &key);
 		void	deleteChannel(const std::string &name);
 		void	setStartTime(void);
+		void	registrate(Client &cli);
 
 		bool	check_nickname(const std::string &nickname);
 		bool	check_channel(const std::string &channel);
@@ -70,6 +73,7 @@ class Server
 
 		void send_message_to_fd(int fd, std::string message);
 		void send_message_to_channel(std::string channel, std::string message);
+		void send_message_to_client_with_code(Client &cli, std::string code, std::string message);
 
 		//server time
 		//send

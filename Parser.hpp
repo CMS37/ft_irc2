@@ -28,7 +28,7 @@ class Parser
         void cmd_join();
         void cmd_list();
         void cmd_ping();
-        void cmd_nick(const std::string &nick);
+        void cmd_nick();
         void cmd_part();
         void cmd_user();
         void cmd_names();
@@ -43,7 +43,7 @@ class Parser
         void cmd_topic();
         void cmd_mode();
         void cmd_exit();
-        void cmd_pass(const std::string &password);
+        void cmd_pass();
 
 
 };
