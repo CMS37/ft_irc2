@@ -122,7 +122,7 @@ void Parser::cmd_cap()
         this->_server.send_message_to_fd(this->_client.getFd(), "CAP * LS :End of CAP LS negotiation\n");
     }
     else
-        throw std::invalid_argument("Wrong argument");
+        throw std::invalid_argument("Wrong argument\n");
 }
 
 void Parser::cmd_join()
@@ -291,13 +291,13 @@ void Parser::cmd_help()
 
 void Parser::cmd_time()
 {
-	std::string msg;
+	// std::string msg;
 
-	if(this->_tokens.size() == 2)
-		msg = ctime(_server.getStartTime()) + "; check the time on the server \"" + _server.getHostname() + "\"";
-	else
-		//유저가 서버에 접속한시간?  (<USER> TIME <SERVER>)?!
-	this->_server.send_message_to_fd(this->_client.getFd(), msg);
+	// if(this->_tokens.size() == 2)
+	// 	msg = ctime(_server.getStartTime()) + "; check the time on the server \"" + _server.getHostname() + "\"";
+	// else
+	// 	//유저가 서버에 접속한시간?  (<USER> TIME <SERVER>)?!
+	// this->_server.send_message_to_fd(this->_client.getFd(), msg);
 }
 
 void Parser::cmd_version()
