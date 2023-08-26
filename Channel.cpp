@@ -23,8 +23,11 @@ Channel::Channel(const std::string &name, const std::string &key) : name(name), 
 
 Channel::~Channel()
 {
+	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
+		delete (*it);
 	for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
 		delete (*it);
+	op.clear();
 	invited.clear();
 }
 
@@ -37,6 +40,18 @@ Channel &Channel::operator=(const Channel &f)
 {
 	if (this != &f)
 	{
+		this->op = f.op;
+		this->invited = f.invited;
+		this->name = f.name;
+		this->topic = f.topic;
+		this->key = f.key;
+		this->limit = f.limit;
+		this->setmodes = f.setmodes;
+		this->unsetmodes = f.unsetmodes;
+		this->invite_only = f.invite_only;
+		this->use_key = f.use_key;
+		this->topic_set = f.topic_set;
+		this->limit_set = f.limit_set;
 	}
 	return (*this);
 }
@@ -90,6 +105,26 @@ void Channel::printInfo(void)
 		std::cout << (*it)->getNickname() << std::endl;
 }
 
+bool Channel::is_operator(const Client &client)
+{
+	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
+	{
+		if ((*it)->getNickname() == client.getNickname())
+			return (true);
+	}
+	return (false);
+}
+
+bool Channel::is_invited(const std::string &nickname)
+{
+	for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
+	{
+		if ((*it)->getNickname() == nickname)
+			return (true);
+	}
+	return (false);
+}
+
 /*//////////////////////////////////////////////////////////////////////////////*/
 /*//                                                                          //*/
 /*//                                SETTER                                    //*/
@@ -104,6 +139,7 @@ void Channel::setTopic(const std::string &topic)
 
 void Channel::setInviteOnly(bool value)
 {
+	std::cout << "setInviteOnly: " << value << std::endl;
 	invite_only = value;
 }
 
@@ -117,6 +153,16 @@ void Channel::setLimit(size_t limit)
 {
 	this->limit = limit;
 	limit_set = true;
+}
+
+void Channel::setOperator(const Client &client)
+{
+	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
+	{
+		if ((*it)->getNickname() == client.getNickname())
+			throw std::invalid_argument("You are already operator");
+	}
+	op.push_back(new Client(client));
 }
 
 void Channel::unsetTopic(void)
@@ -178,4 +224,14 @@ bool Channel::getUseKey(void) const
 std::vector<Client *> Channel::getInvited(void) const
 {
 	return (invited);
+}
+
+std::vector<char> Channel::getSetModes(void) const
+{
+	return (setmodes);
+}
+
+std::vector<char> Channel::getUnsetModes(void) const
+{
+	return (unsetmodes);
 }

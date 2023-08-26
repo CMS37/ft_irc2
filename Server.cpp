@@ -194,7 +194,8 @@ bool Server::check_channel(const std::string &channel)
 {
 	for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 	{
-		if (it->first == channel)
+		//채널이름넣어줄때 널문자도 넣어줘야대나....길이가다르네..
+		if (!strncmp(it->first.c_str(), channel.c_str(),channel.length()))
 			return (true);
 	}
 	return (false);
@@ -328,6 +329,26 @@ time_t Server::getStartTime(void) const
 std::string Server::getHostname(void) const
 {
 	return (this->hostname);
+}
+
+Channel *Server::getChannel(const std::string &name)
+{
+	for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
+	{
+		if (it->first == name)
+			return (it->second);
+	}
+	return (NULL);
+}
+
+Client *Server::getClient(const std::string &nickname)
+{
+	for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		if (it->second->getNickname() == nickname)
+			return (it->second);
+	}
+	return (NULL);
 }
 
 /*//////////////////////////////////////////////////////////////////////////////*/

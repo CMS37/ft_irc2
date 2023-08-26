@@ -31,22 +31,21 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 		{
 			Channel *channel = new Channel(name, key);
 			channels.insert(std::pair<std::string, Channel *>(name, channel));
+			channel->setOperator(*this);
 		}
 		else
 		{
 			Channel *channel = channels.find(name)->second;
 			if (channel->getUseKey() && !channel->checkKey(key))
+				//code 475 "<channel> :Cannot join channel (+k)"
 				throw std::invalid_argument("Wrong key");
 		}
 		Channel *channel = channels.find(name)->second;
 		channel->addClient(*this);
-		std::string msg = ":" + this->nickname + " JOIN " + name + "\r\n";
-		server.send_message_to_fd(this->fd, msg);
 	}
 	catch(const std::exception& e)
 	{
-		std::string msg = ":" + this->nickname + " FAIL JOIN " + name + e.what() + "\r\n";
-		server.send_message_to_fd(this->fd, msg);
+		server.send_message_to_fd(this->fd, e.what());
 	}
 }
 

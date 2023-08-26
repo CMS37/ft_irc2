@@ -56,7 +56,16 @@ void Parser::what_is_this()
         else if(this->_tokens[0] == "USER")
             cmd_user();
         else if(this->_tokens[0] == "MODE")
-            cmd_mode(_tokens[1]);
+        {
+			std::string modeArgs;
+			for (unsigned long i = 1; i < _tokens.size(); i++)
+			{
+				modeArgs += _tokens[i];
+				if (i < _tokens.size() - 1)
+        		    modeArgs += " ";
+			}
+			cmd_mode(modeArgs);
+		}
         else if(this->_tokens[0] == "QUIT")
             cmd_quit();
         else if(this->_tokens[0] == "PASS")
@@ -128,6 +137,7 @@ void Parser::cmd_join()
     if(!this->_client.getIsRegistered())
         this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
 
+    this->_tokens[1].erase(_tokens[1].length() - 1);
     if (this->_tokens.size() == 2) // /join #channel
         this->_client.joinChannel(this->_tokens[1], "");
     else if (this->_tokens.size() == 3) // /join #channel key
@@ -187,7 +197,7 @@ void Parser::cmd_user()
 {
     if(this->_tokens.size() < 5)
         this->_server.send_message_to_client_with_code(this->_client, "461", "USER :Not enough parameters");
-
+    
     this->_client.setUsername(this->_tokens[1]);
     this->_client.setHostname(this->_tokens[2]);
     this->_client.setServername(this->_tokens[3]);
@@ -204,62 +214,6 @@ void Parser::cmd_user()
     // ex) 001 : Welcome to the Internet Relay Network <nickname>!<username>@<host>
 
 
-}
-
-
-// token[0] == mode token[1] == "#irssi +o min"으로 넘긴다는 가정하에
-void Parser::cmd_mode(const std::string &mode)
-{
-	std::string tmp;
-	std::string tmp2;
-	std::string user;
-	std::string target;
-	std::string mode_str;
-	std::vector<std::string> str = split(mode, ' ');
-	std::map<std::string, bool> mode_map;
-
-	for (std::vector<std::string>::iterator it = str.begin(); it != str.end(); ++it)
-	{
-		switch ((*it)[0])
-		{
-			case '&':
-			case '!':
-			case '#':
-				if (_server.check_channel(*it))
-					target = *it;
-				else
- 					throw std::invalid_argument("Can't find channel");
-				break;
-			case '-':
-			case '+':
-				mode_str = *it;
-				break;
-			default:
-				if (_server.check_nickname(*it))
-					user = *it;
-				else
-                       throw std::invalid_argument("Can't find user");
-				break;
-		}
-	}
-
-	size_t pos = mode_str.find('-');
-	if (pos != std::string::npos)
-	{
-		tmp = mode_str.substr(1, pos);
-		tmp2 = mode_str.substr(pos + 1);
-	}
-	else
-	{
-		tmp = mode_str.substr(1);
-		tmp2 = "";
-	}
-	// testcode
-	std::cout << "target: " << target << std::endl;
-	std::cout << "mode: " << mode_str << std::endl;
-	std::cout << "tmp: " << tmp << std::endl;
-	std::cout << "tmp2: " << tmp2 << std::endl;
-	std::cout << "user: " << user << std::endl;
 }
 
 void Parser::cmd_pass()
