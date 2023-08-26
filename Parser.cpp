@@ -183,7 +183,7 @@ void Parser::cmd_ping()
     if (this->_tokens.size() < 2)
         this->_server.send_message_to_client_with_code(this->_client, "461", "PING :Not enough parameters");
 	else if (this->_tokens.size() == 2)
-        this->_server.send_message_to_fd(this->_client.getFd(), ":PONG " + this->_server.getHostname() + " " + this->_client.getHostname() +  "\r\n");
+        this->_server.send_message_to_fd(this->_client.getFd(), "PONG " + this->_server.getHostname() + " " + this->_client.getHostname() +  "\r\n");
 	// else
 	// {
 	// 	string args;
