@@ -359,20 +359,19 @@ Client *Server::getClient(const std::string &nickname)
 
 void Server::send_message_to_fd(int fd, std::string message)
 {
-	std::cout << ">>>send_message_to_fd: " << message << "\n\n";
+	std::cout << ">>>message_sent_to_fd: " << message << "\n\n";
 	send(fd, message.c_str(), message.length(), 0);
 }
 
 void Server::send_message_to_client_with_code(Client &cli, std::string code, std::string message)
 {
 	std::string msg = ":" + hostname + " " + code + " " + cli.getNickname() + " " + message + "\n";
-	std::cout << "sending msg : " << msg << std::endl;
 	send_message_to_fd(cli.getFd(), msg);
 }
 
 void Server::send_message_to_channel(std::string channel_name, std::string message)
 {
-	std::cout << "send_message_to_channel: " << message << std::endl;
+	std::cout << "@@@@message_sent_to_channel: " << message << std::endl;
 	std::map<std::string, Channel *>::iterator cha_it;
 
 	for(cha_it = this->channels.begin(); cha_it != this->channels.end(); cha_it++)
@@ -388,5 +387,4 @@ void Server::send_message_to_channel(std::string channel_name, std::string messa
 			}
 		}
 	}
-	throw std::invalid_argument("Channel name does not exist");
 }

@@ -56,7 +56,7 @@ class Channel
 		void unsetKey(void);
 		void unsetLimit(void);
 
-		void addClient(const Client &client);
+		void addClient(Client &client);
 		void deleteClient(const std::string &nickname);
 
 		void printInfo(void);
