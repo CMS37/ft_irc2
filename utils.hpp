@@ -8,7 +8,15 @@
 std::vector<std::string> split(std::string input, char delimiter);
 bool contains(std::string &haystack, std::string const &needles);
 std::string parse_pw(std::string pw);
+bool is_space(char c);
 
+struct NotSpace
+{
+    bool operator()(char c)
+    {
+        return !is_space(c);
+    }
+};
 #endif
 
 

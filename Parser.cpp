@@ -13,10 +13,12 @@
 // /invite
 // /kick
 // /topic
+
 // /mode
 
 Parser::Parser(Server& server, Client& client, std::string str) : _server(server), _client(client), _str(str)
 {
+    static int i = 0;
     // while (str.find("\r\n") != std::string::npos)
 	// 	str.replace(str.find("\r\n"), 2, "\n");
     // 스플릿구분자 '\n'으로 해야되는거같아욥 \r\n?이나..?아닐수도있습니당 :(
@@ -134,10 +136,13 @@ void Parser::cmd_cap()
 
 void Parser::cmd_join()
 {
+
     if(!this->_client.getIsRegistered())
         this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
 
-    this->_tokens[1].erase(_tokens[1].length() - 1);
+    std::string channelName(this->_tokens[1]);
+    while (!channelName.empty() && is_space(channelName[channelName.size() - 1]))
+        channelName.erase(channelName.end() - 1);
     if (this->_tokens.size() == 2) // /join #channel
         this->_client.joinChannel(this->_tokens[1], "");
     else if (this->_tokens.size() == 3) // /join #channel key
@@ -165,6 +170,8 @@ void Parser::cmd_nick()
 {
     std::string nickname(this->_tokens[1]);
 
+    while (!nickname.empty() && is_space(nickname[nickname.size() - 1]))
+        nickname.erase(nickname.end() - 1);
     if (this ->_tokens.size() != 2)
 		this->_server.send_message_to_client_with_code(this->_client, "461", "NICK : wrong number of arguments");
 	else if (contains(nickname, ":/\0"))

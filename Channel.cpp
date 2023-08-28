@@ -165,18 +165,43 @@ void Channel::setOperator(const Client &client)
 	op.push_back(new Client(client));
 }
 
+void Channel::unsetOperator(const Client &client)
+{
+	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
+	{
+		if ((*it)->getNickname() == client.getNickname())
+		{
+			delete (*it);
+			op.erase(it);
+			return ;
+		}
+	}
+	throw std::invalid_argument("You are not operator");
+}
+
 void Channel::unsetTopic(void)
 {
+	this->topic.clear();
 	topic_set = false;
 }
 
-void Channel::unsetKey(void)
+void Channel::unsetKey(const std::string &key)
 {
-	use_key = false;
+	if (this->key != key)
+	{
+		//code 475 "<channel> :Bad channel key"
+		throw std::invalid_argument("Wrong key");
+	}
+	else
+	{
+		this->key.clear();
+		use_key = false;
+	}
 }
 
 void Channel::unsetLimit(void)
 {
+	this->limit = 0;
 	limit_set = false;
 }
 
