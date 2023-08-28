@@ -24,7 +24,10 @@ Client &Client::operator=(const Client &f)
 void Client::joinChannel(const std::string &name, const std::string &key)
 {
 	std::map<std::string, Channel *> &channels = server.getChannels();
-
+	if (!name.empty())
+	{
+		std::cout << "name: " << name << name.length() << std::endl;
+	}
 	try
 	{
 		if (channels.find(name) == channels.end())
