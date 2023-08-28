@@ -5,7 +5,7 @@ Channel::Channel(const std::string &name) : name(name)
 	use_key = false;
 	invite_only = false;
 	topic_set = false;
-	limit = false;
+	limit_set = false;
 	topic = "";
 }
 
@@ -17,7 +17,7 @@ Channel::Channel(const std::string &name, const std::string &key) : name(name), 
 		use_key  = false;
 	invite_only = false;
 	topic_set = false;
-	limit = false;
+	limit_set = false;
 	topic = "";
 }
 
@@ -66,13 +66,22 @@ bool Channel::checkKey(const std::string &key)
 void Channel::addClient(const Client &client)
 {
 	if (limit_set && invited.size() >= limit)
-		throw std::invalid_argument("Channel is full");
+	{
+		std::string msg = ":irc_server 471 "+ client.getNickname() + " :Cannot join channel (+l)\n";
+		//code 471 "<channel> :Cannot join channel (+l)"
+		throw std::invalid_argument(msg);
+		return ;
+	}
 	if (invite_only)
 	{
 		for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
 		{
 			if ((*it)->getNickname() == client.getNickname())
-				throw std::invalid_argument("You are already invited");
+			{
+				//code 473 "<channel> :Cannot join channel (+i)"
+				std::string msg = ":irc_server 473 "+ client.getNickname() + " :Cannot join channel (+i)\n";
+				throw std::invalid_argument(msg);
+			}
 		}
 	}
 	Client *new_client = new Client(client);
