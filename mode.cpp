@@ -9,8 +9,6 @@ void Parser::cmd_mode(const std::string &mode)
 		this->_server.send_message_to_fd(_client.getFd(), ": Set default mode [+i]\n"); // 무슨역할인가...채널없는상태의 유저초대권한?어디로?
 		return ;
 	}
-	std::cout << "=============MODE=============" << std::endl;
-	std::cout << "str[0]: " << str[0] << "| len: "<< str[0].length() << std::endl;
 	Channel *channel = _server.getChannel(str[0]);
 	if (channel == NULL)
 	{
