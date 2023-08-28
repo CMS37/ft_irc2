@@ -327,22 +327,15 @@ void Parser::cmd_kick()
 void Parser::cmd_topic()
 {
     //전면 수정 필요
-    if(this->_tokens.size() == 1)
-    {
-        if(this->_client.getChannel() == NULL)
-            this->_server.send_message_to_client_with_code(this->_client, "442", ":You're not on the channel");
-        else
-            this->_server.send_message_to_client_with_code(this->_client, "332", this->_client.getChannel()->getName() + " :" + this->_client.getChannel()->getTopic());
-    } 
-    else if(this->_tokens.size() == 2)
+    if(this->_tokens.size() == 2)
     {
         if(this->_client.getChannel() != NULL)
-            this->_server.send_message_to_client_with_code(this->_client, "332", this->_client.getChannel()->getName() + " :" + this->_client.getChannel()->getTopic());
+            this->_server.send_message_to_client_with_code(this->_client, "322", this->_client.getChannel()->getName() + " :" + this->_client.getChannel()->getTopic());
         else
         {
             Channel* chan = this->_server.getChannel(this->_tokens[1]);
             if(chan != NULL)
-                this->_server.send_message_to_client_with_code(this->_client, "332", chan->getName() + " :" + chan->getTopic());
+                this->_server.send_message_to_client_with_code(this->_client, "322", chan->getName() + " :" + chan->getTopic());
             else
                 this->_server.send_message_to_client_with_code(this->_client, "403", this->_tokens[1] + " :No such channel");
         }
@@ -365,6 +358,7 @@ void Parser::cmd_topic()
         }
 
         chan->setTopic(topic_str);
+        this->_server.send_message_to_client_with_code(this->_client, "322", chan->getName() + " :" + chan->getTopic());
     }
 }
 
