@@ -20,7 +20,6 @@ void Parser::cmd_mode(const std::string &mode)
 	{
 		//모드,오퍼 지원안하는 채널
 	}
-
 	if (!channel->is_invited(_client.getNickname()))
 	{
 		std::cout << _client.getNickname() << std::endl;
@@ -44,7 +43,7 @@ void Parser::cmd_mode(const std::string &mode)
 		pos = true;
 	else if (set[0] == '-')
 		pos = false;
-
+	std::cout << "PASS 1" << std::endl;
 	for (; it != set.end(); ++it)
 	{
 		switch(*it)
@@ -61,7 +60,7 @@ void Parser::cmd_mode(const std::string &mode)
 					// code 461 "<channel> :Not enough parameters"
 					throw std::invalid_argument(": Not enough parameters\n");
 				}
-				else if (channel->is_invited(str[i]))
+				else if (!channel->is_invited(str[i]))
 				{
 					// code 441 "<nickname> <channel> :They aren't on that channel"
 					throw std::invalid_argument(": You aren't on that channel\n");
