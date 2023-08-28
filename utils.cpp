@@ -1,14 +1,18 @@
 #include"utils.hpp"
 
+bool is_space(char c)
+{
+    return (c == '\t' || c == '\n' || c == '\r' || c == ' ');
+}
+
 std::vector<std::string> split(std::string input, char delimiter)
 {
     std::vector<std::string> answer;
     std::stringstream ss(input);
     std::string temp;
 
-    while(getline(ss, temp, delimiter))
-        answer.push_back(temp);
-
+	while (getline(ss, temp, delimiter))
+         answer.push_back(temp);
     return answer;
 }
 

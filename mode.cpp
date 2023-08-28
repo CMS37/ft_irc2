@@ -4,11 +4,16 @@ void Parser::cmd_mode(const std::string &mode)
 {
 	std::vector<std::string> str = split(mode, ' ');
 
+	if (_client.getNickname() == str[0] && str[1][0] == '+' && str[1][1] == 'i' && str.size() == 2)
+	{
+		this->_server.send_message_to_fd(_client.getFd(), ": Set default mode [+i]\n"); // 무슨역할인가...채널없는상태의 유저초대권한?어디로?
+		return ;
+	}
 	Channel *channel = _server.getChannel(str[0]);
 	if (channel == NULL)
 	{
 		// code 403 "<channel> :No such channel"
-		throw std::invalid_argument(":No such channel\n");
+		throw std::invalid_argument(": No such channel\n");
 	}
 	std::string ch = channel->getName();
 	if (ch[0] == '+')
@@ -20,12 +25,12 @@ void Parser::cmd_mode(const std::string &mode)
 	{
 		std::cout << _client.getNickname() << std::endl;
 		// code 441 "<nickname> <channel> :They aren't on that channel"
-		throw std::invalid_argument(":You aren't on that channel\n");
+		throw std::invalid_argument(": You aren't on that channel\n");
 	}
 	else if (!channel->is_operator(_client))
 	{
 		// code 482 "<channel> :You're not channel operator"
-		throw std::invalid_argument(":You're not channel operator\n");
+		throw std::invalid_argument(": You're not channel operator\n");
 	}
 
 	std::string seting;
@@ -54,12 +59,12 @@ void Parser::cmd_mode(const std::string &mode)
 				if (str.size() < i + 1)
 				{
 					// code 461 "<channel> :Not enough parameters"
-					throw std::invalid_argument(":Not enough parameters\n");
+					throw std::invalid_argument(": Not enough parameters\n");
 				}
 				else if (channel->is_invited(str[i]))
 				{
 					// code 441 "<nickname> <channel> :They aren't on that channel"
-					throw std::invalid_argument(":You aren't on that channel\n");
+					throw std::invalid_argument(": You aren't on that channel\n");
 				}
 				else
 				{
@@ -94,7 +99,7 @@ void Parser::cmd_mode(const std::string &mode)
 				if (str.size() < i + 1)
 				{
 					// code 461 "<channel> :Not enough parameters"
-					throw std::invalid_argument(":Not enough parameters\n");
+					throw std::invalid_argument(": Not enough parameters\n");
 				}
 				else
 				{
@@ -137,7 +142,7 @@ void Parser::cmd_mode(const std::string &mode)
 					if (str.size() < i + 1)
 					{
 						// code 461 "<channel> :Not enough parameters"
-						throw std::invalid_argument(":Not enough parameters\n");
+						throw std::invalid_argument(": Not enough parameters\n");
 					}
 					channel->setLimit(atoi(str[i].c_str()));
 					seting += "+l ";
@@ -149,7 +154,7 @@ void Parser::cmd_mode(const std::string &mode)
 				break;
 			default:
 				// code 472 "<char> :is unknown mode char to me"
-				throw std::invalid_argument(":is unknown mode char to me\n");
+				throw std::invalid_argument(": is unknown mode char to me\n");
 		}
 	}
 	std::cout << "=============MODE=============" << std::endl;
