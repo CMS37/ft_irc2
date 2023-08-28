@@ -43,7 +43,7 @@ void Parser::cmd_mode(const std::string &mode)
 		pos = true;
 	else if (set[0] == '-')
 		pos = false;
-	std::cout << "PASS 1" << std::endl;
+
 	for (; it != set.end(); ++it)
 	{
 		switch(*it)

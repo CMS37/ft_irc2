@@ -388,6 +388,7 @@ void Server::send_message_to_channel(std::string channel_name, std::string messa
 			{
 				send_message_to_fd((*cli_it)->getFd(), message);
 			}
+			return ;
 		}
 	}
 	throw std::invalid_argument("Channel name does not exist");
