@@ -35,7 +35,7 @@ class Parser
         void cmd_part();
         void cmd_user();
         void cmd_names();
-        void cmd_msg();
+        void cmd_privmsg();
         void cmd_quit();
         void cmd_help();
         void cmd_time();
