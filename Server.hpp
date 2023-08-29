@@ -76,7 +76,7 @@ class Server
 
 		void send_message_to_fd(int fd, std::string message);
 		void send_message_to_channel(std::string channel, std::string message);
-		void send_message_to_client_with_code(Client &cli, std::string code, std::string message);
+		void send_message_to_client_with_code(const Client &cli, std::string code, std::string message);
 
 		//server time
 		//send

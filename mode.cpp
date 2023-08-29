@@ -7,34 +7,34 @@ void Parser::cmd_mode(const std::string &mode)
 	if (_client.getNickname() == str[0] && str[1][0] == '+' && str[1][1] == 'i' && str.size() == 2)
 	{
 		//code 324 "<channel> +<mode> <mode params>"
-		this->_server.send_message_to_fd(_client.getFd(), ": Set default mode [+i]\n"); // 무슨역할인가...채널없는상태의 유저초대권한?어디로?
+		this->_server.send_message_to_fd(_client.getFd(), ": Set default mode [+i]\r\n"); // 무슨역할인가...채널없는상태의 유저초대권한?어디로?
 		return ;
 	}
 	Channel *channel = _server.getChannel(str[0]);
 	if (channel == NULL)
 	{
 		// code 403 "<channel> :No such channel"
-		this->_server.send_message_to_client_with_code(_client, "403", str[0] + " :No such channel");
+		this->_server.send_message_to_client_with_code(_client, "403", str[0] + " : No such channel");
 		return ;
 	}
 	std::string ch = channel->getName();
 	if (ch[0] == '+')
 	{
-		// code 324 "<channel> +<mode> <mode params>"
-		this->_server.send_message_to_client_with_code(_client, "324", ch + " +<mode> <mode params>");
+		// code ??
+		this->_server.send_message_to_fd(_client.getFd(), ":irc_server NOTICE : This channel is not supported mode\r\n");
 		return ;
 	}
 	if (!channel->is_invited(_client.getNickname()))
 	{
 		std::cout << _client.getNickname() << std::endl;
 		// code 441 "<nickname> <channel> :They aren't on that channel"
-		this->_server.send_message_to_client_with_code(_client, "441", _client.getNickname() + " " + str[0] + " :They aren't on that channel");
+		this->_server.send_message_to_client_with_code(_client, "441", _client.getNickname() + " " + str[0] + " : They aren't on that channel");
 		return ;
 	}
 	else if (!channel->is_operator(_client))
 	{
 		// code 482 "<channel> :You're not channel operator"
-		this->_server.send_message_to_client_with_code(_client, "482", str[0] + " :You're not channel operator");
+		this->_server.send_message_to_client_with_code(_client, "482", str[0] + " : You're not channel operator");
 		return ;
 	}
 	std::string seting;
@@ -171,6 +171,7 @@ void Parser::cmd_mode(const std::string &mode)
 	std::cout << "seting: " << seting << std::endl;
 	std::cout << "argv: " << argv << std::endl;
 	std::cout << "==============================" << std::endl;
+	this->_server.send_message_to_channel(channel->getName(), ":" + _client.getNickname() + " MODE " + channel->getName() + " :" + seting + argv + "\r\n");
 }
 // /*
 // //         MODE - 채널 모드 및 구성원의 권한 변경
