@@ -5,7 +5,7 @@ Channel::Channel(const std::string &name) : name(name)
 	use_key = false;
 	invite_only = false;
 	topic_set = false;
-	limit = false;
+	limit_set = false;
 	topic = "";
 }
 
@@ -17,7 +17,7 @@ Channel::Channel(const std::string &name, const std::string &key) : name(name), 
 		use_key  = false;
 	invite_only = false;
 	topic_set = false;
-	limit = false;
+	limit_set = false;
 	topic = "";
 }
 
@@ -66,13 +66,22 @@ bool Channel::checkKey(const std::string &key)
 void Channel::addClient(Client &client)
 {
 	if (limit_set && invited.size() >= limit)
-		throw std::invalid_argument("Channel is full");
+	{
+		std::string msg = ":irc_server 471 "+ client.getNickname() + " :Cannot join channel (+l)\n";
+		//code 471 "<channel> :Cannot join channel (+l)"
+		throw std::invalid_argument(msg);
+		return ;
+	}
 	if (invite_only)
 	{
 		for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
 		{
 			if ((*it)->getNickname() == client.getNickname())
-				throw std::invalid_argument("You are already invited");
+			{
+				//code 473 "<channel> :Cannot join channel (+i)"
+				std::string msg = ":irc_server 473 "+ client.getNickname() + " :Cannot join channel (+i)\n";
+				throw std::invalid_argument(msg);
+			}
 		}
 	}
 
@@ -177,18 +186,43 @@ void Channel::setOperator(const Client &client)
 	op.push_back(new Client(client));
 }
 
+void Channel::unsetOperator(const Client &client)
+{
+	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
+	{
+		if ((*it)->getNickname() == client.getNickname())
+		{
+			delete (*it);
+			op.erase(it);
+			return ;
+		}
+	}
+	throw std::invalid_argument("You are not operator");
+}
+
 void Channel::unsetTopic(void)
 {
+	this->topic.clear();
 	topic_set = false;
 }
 
-void Channel::unsetKey(void)
+void Channel::unsetKey(const std::string &key)
 {
-	use_key = false;
+	if (this->key != key)
+	{
+		//code 475 "<channel> :Bad channel key"
+		throw std::invalid_argument("Wrong key");
+	}
+	else
+	{
+		this->key.clear();
+		use_key = false;
+	}
 }
 
 void Channel::unsetLimit(void)
 {
+	this->limit = 0;
 	limit_set = false;
 }
 

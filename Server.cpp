@@ -131,6 +131,8 @@ void Server::read_client_data(size_t i)
 	else
 	{
 		std::string sbuf(buf);
+		while (sbuf.find("\r\n") != std::string::npos)
+			sbuf.replace(sbuf.find("\r\n"), 2, "\n");
 		std::vector<std::string> lines = split(sbuf, '\n');
 
 		std::cout << "================================\n";
@@ -385,6 +387,7 @@ void Server::send_message_to_channel(std::string channel_name, std::string messa
 			{
 				send_message_to_fd((*cli_it)->getFd(), message);
 			}
+			return ;
 		}
 	}
 }
