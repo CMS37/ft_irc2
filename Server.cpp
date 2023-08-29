@@ -147,6 +147,7 @@ void Server::read_client_data(size_t i)
 		}
 		// Parser parser(*this , *clients[fds[i].fd], sbuf);
 		// parser.what_is_this();
+		lines.clear();
 	}
 }
 
