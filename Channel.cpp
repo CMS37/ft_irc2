@@ -81,6 +81,7 @@ void Channel::addClient(const Client &client)
 				//code 473 "<channel> :Cannot join channel (+i)"
 				std::string msg = ":irc_server 473 "+ client.getNickname() + " :Cannot join channel (+i)\n";
 				throw std::invalid_argument(msg);
+				return ;
 			}
 		}
 	}

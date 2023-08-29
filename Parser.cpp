@@ -74,6 +74,10 @@ void Parser::what_is_this()
             cmd_privmsg();
         else if(this->_tokens[0] == "TOPIC")
             cmd_topic();
+        else if(this->_tokens[0] == "KICK")
+            cmd_kick();
+        else if(this->_tokens[0] == "INVITE")
+            cmd_invite();
     //     else if(this->_tokens[0] == "LIST")
     //         cmd_list();
     //     else if(this->_tokens[0] == "PART")
@@ -88,10 +92,6 @@ void Parser::what_is_this()
     //         cmd_version();
     //     else if(this->_tokens[0] == "MOTD")
     //         cmd_motd();
-    //     else if(this->_tokens[0] == "INVITE")
-    //         cmd_invite();
-    //     else if(this->_tokens[0] == "KICK")
-    //         cmd_kick();
     //     else if(this->_tokens[0] == "EXIT")
     //         cmd_exit();
     }
@@ -319,24 +319,73 @@ void Parser::cmd_motd()
 
 void Parser::cmd_invite()
 {
-
+    // /invite <nickname> <channel>
+    if (this->_tokens.size() < 3)
+        this->_server.send_message_to_client_with_code(this->_client, "461", "INVITE :Not enough parameters");
+    Client *client = this->_server.getClient(this->_tokens[1]);
+    Channel *channel = this->_server.getChannel(this->_tokens[2]);
+    if (channel == NULL)
+    {
+        this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[2] + ": No such channel");
+        return ;
+    }
+    if (client == NULL)
+    {
+        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[1] + ": No such nick");
+        return ;
+    }
+    if (!channel->is_operator(this->_client))
+    {
+        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[2] + ": You're not channel operator");
+        return ;
+    }
+    if (channel->is_invited(client->getNickname()))
+    {
+        this->_server.send_message_to_client_with_code(_client, "443", this->_tokens[2] + " " + this->_tokens[1] + " :is already on channel");
+        return ;
+    }
+    this->_server.send_message_to_client_with_code(_client, "341", this->_tokens[1] + " " + this->_tokens[2] + " :Inviting " + this->_tokens[1] + " to " + this->_tokens[2]);
+    try
+    {
+        channel->addClient(*client);
+    }
+    catch(const std::exception& e)
+    {
+        this->_server.send_message_to_fd(this->_client.getFd(), e.what());
+        return ;
+    }
+    this->_server.send_message_to_fd(client->getFd(), ":" + this->_client.getNickname() + " INVITE " + this->_tokens[1] + " " + this->_tokens[2] + "\r\n");
 }
 
 void Parser::cmd_kick()
 {
+    if (this->_tokens.size() < 3)
+        this->_server.send_message_to_client_with_code(this->_client, "461", "KICK :Not enough parameters");
     Channel *channel = this->_server.getChannel(this->_tokens[1]);
+    Client *client = this->_server.getClient(this->_tokens[2]);
 	if (channel == NULL)
-		this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[1] + " : No such channel");
-    else
     {
-        if (channel->is_operator(this->_client))
-        {
-            this->_server.send_message_to_channel(this->_tokens[1], "KICK " + channel->getName() + " " + this->_tokens[2] + " : Kicked by " + this->_client.getNickname());
-            this->_server.client_disconnect_from_channel(&(this->_client));
-        }
-        else
-            this->_server.send_message_to_client_with_code(this->_client, "482", ":You're not channel operator");
+		this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[1] + " : No such channel");
+        return ;
     }
+    if (client == NULL)
+    {
+        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[2] + " : No such nick");
+        return ;
+    }
+    if (!channel->is_invited(client->getNickname()))
+    {
+        this->_server.send_message_to_client_with_code(_client, "441", this->_tokens[2] + " " + this->_tokens[1] + " : They aren't on that channel");
+        return ;
+    }
+    if (!channel->is_operator(this->_client))
+    {
+        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[1] + " : You're not channel operator");
+        return ;
+    }
+    channel->deleteClient(client->getNickname());
+    this->_server.send_message_to_channel(this->_tokens[1], ":" + this->_client.getNickname() + " KICK " + this->_tokens[1] + " " + this->_tokens[2] + " : Kicked by " + this->_client.getNickname() + "\r\n");
+    
 }
 
 void Parser::cmd_topic()
