@@ -28,6 +28,8 @@ void Parser::what_is_this()
 {
     try
     {
+        // if(!this->_client.getIsRegistered())
+        //     this->_server.send_message_to_client_with_code(this->_client, "451", ":You have not registered");
         /*
             이게더 나을꺼같아요 이건 본인 편하신대로 하셔요 확인하구 지우셔도됩니다.
             map(명령어, 함수포인터)
@@ -43,7 +45,7 @@ void Parser::what_is_this()
         // for(unsigned int i = 0; i < this->_tokens.size(); i++)
         // std::cout << "token " << i << ": " << this->_tokens[i] << std::endl;
 
-    if (this->_tokens[0] == "CAP")
+        if (this->_tokens[0] == "CAP")
             cmd_cap();
         else if(this->_tokens[0] == "JOIN")
             cmd_join();
@@ -68,14 +70,16 @@ void Parser::what_is_this()
             cmd_quit();
         else if(this->_tokens[0] == "PASS")
             cmd_pass();
+        else if(this->_tokens[0] == "PRIVMSG")
+            cmd_privmsg();
+        else if(this->_tokens[0] == "TOPIC")
+            cmd_topic();
     //     else if(this->_tokens[0] == "LIST")
     //         cmd_list();
     //     else if(this->_tokens[0] == "PART")
     //         cmd_part();
     //     else if(this->_tokens[0] == "NAMES")
     //         cmd_names();
-    //     else if(this->_tokens[0] == "MSG")
-    //         cmd_msg();
     //     else if(this->_tokens[0] == "HELP")
     //         cmd_help();
     //     else if(this->_tokens[0] == "TIME")
@@ -88,8 +92,6 @@ void Parser::what_is_this()
     //         cmd_invite();
     //     else if(this->_tokens[0] == "KICK")
     //         cmd_kick();
-    //     else if(this->_tokens[0] == "TOPIC")
-    //         cmd_topic();
     //     else if(this->_tokens[0] == "EXIT")
     //         cmd_exit();
     }
@@ -233,8 +235,47 @@ void Parser::cmd_pass()
         this->_client.setIsPasswordAllowed(true);
 }
 
-void Parser::cmd_msg()
+void Parser::cmd_privmsg()
 {
+    if(!this->_client.getIsRegistered())
+        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
+        if(!this->_client.getIsRegistered())
+        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
+    if(this->_tokens.size() < 2)
+    {
+        this->_server.send_message_to_client_with_code(this->_client, "461", "PRIVMSG :Not enough parameters");
+        return;
+    }
+
+    std::vector<std::string> targets = split(this->_tokens[1], ',');
+    std::string message;
+    for(unsigned int i = 2; i < this->_tokens.size(); i++)
+    {
+        message += this->_tokens[i];
+        if(i < this->_tokens.size() - 1)
+            message += " ";
+    }
+
+    for(unsigned int i = 0; i < targets.size(); i++)
+    {
+        if(targets[i][0] == '#')
+        {
+            Channel *channel = this->_server.getChannel(targets[i]);
+            if(channel == NULL)
+                this->_server.send_message_to_client_with_code(this->_client, "401", targets[i] + " :No such nick/channel");
+            else
+                this->_server.send_message_to_channel(targets[i], message);
+        }
+        else
+        {
+            Client *client = this->_server.getClient(targets[i]);
+            if(client == NULL)
+                this->_server.send_message_to_client_with_code(this->_client, "401", targets[i] + " :No such nick/channel");
+            else
+                this->_server.send_message_to_fd(client->getFd(), ":" + this->_client.getNickname() + " PRIVMSG " + targets[i] + " :" + message + "\r\n");
+        }
+    }
+
 
 }
 
@@ -305,7 +346,40 @@ void Parser::cmd_kick()
 
 void Parser::cmd_topic()
 {
-    this->_server.setTopic(this->_tokens[1], this->_tokens[2]);    
+    //전면 수정 필요
+    if(this->_tokens.size() == 2)
+    {
+        if(this->_client.getChannel() != NULL)
+            this->_server.send_message_to_client_with_code(this->_client, "322", this->_client.getChannel()->getName() + " :" + this->_client.getChannel()->getTopic());
+        else
+        {
+            Channel* chan = this->_server.getChannel(this->_tokens[1]);
+            if(chan != NULL)
+                this->_server.send_message_to_client_with_code(this->_client, "322", chan->getName() + " :" + chan->getTopic());
+            else
+                this->_server.send_message_to_client_with_code(this->_client, "403", this->_tokens[1] + " :No such channel");
+        }
+    }
+    else
+    {
+        Channel* chan = this->_server.getChannel(this->_tokens[1]);
+        if(chan == NULL)
+        {
+            this->_server.send_message_to_client_with_code(this->_client, "403", this->_tokens[1] + " :No such channel");
+            return;
+        }
+
+        std::string topic_str;
+        for(unsigned int i = 1; i < this->_tokens.size(); i++)
+        {
+            topic_str += this->_tokens[i];
+            if(i < this->_tokens.size() - 1)
+                topic_str += " ";
+        }
+
+        chan->setTopic(topic_str);
+        this->_server.send_message_to_client_with_code(this->_client, "322", chan->getName() + " :" + chan->getTopic());
+    }
 }
 
 /*

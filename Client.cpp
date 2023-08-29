@@ -1,12 +1,12 @@
 #include "Client.hpp"
 
-Client::Client(int fd, Server &server) : fd(fd), server(server), is_registered(false), is_password_allowed(false)
+Client::Client(int fd, Server &server) : fd(fd), server(server), channel(NULL), is_registered(false), is_password_allowed(false)
 {
 }
 
 Client::~Client() {}
 
-Client::Client(const Client &f) : fd(f.fd), server(f.server), is_registered(f.is_registered), is_password_allowed(f.is_password_allowed), nickname(f.nickname)
+Client::Client(const Client &f) : fd(f.fd), server(f.server), channel(f.channel), is_registered(f.is_registered), is_password_allowed(f.is_password_allowed), nickname(f.nickname)
 {
 }
 
@@ -24,27 +24,25 @@ Client &Client::operator=(const Client &f)
 void Client::joinChannel(const std::string &name, const std::string &key)
 {
 	std::map<std::string, Channel *> &channels = server.getChannels();
-	try
+
+	if (channels.find(name) == channels.end())
 	{
-		if (channels.find(name) == channels.end())
-		{
-			Channel *channel = new Channel(name, key);
-			channels.insert(std::pair<std::string, Channel *>(name, channel));
-			channel->setOperator(*this);
-		}
+		Channel *channel = new Channel(name, key);
+		channels.insert(std::pair<std::string, Channel *>(name, channel));
+		channel->setOperator(*this);
+		channel->addClient(*this);
+		this->channel = channel;
+	}
+	else
+	{
+		Channel *channel = channels.find(name)->second;
+		if (channel->getUseKey() && !channel->checkKey(key))
+			this->server.send_message_to_client_with_code(*this, "475", name + " :Cannot join channel (+k)");
 		else
 		{
-			Channel *channel = channels.find(name)->second;
-			if (channel->getUseKey() && !channel->checkKey(key))
-				//code 475 "<channel> :Cannot join channel (+k)"
-				throw std::invalid_argument("Wrong key");
+			channel->addClient(*this);
+			this->channel = channel;
 		}
-		Channel *channel = channels.find(name)->second;
-		channel->addClient(*this);
-	}
-	catch(const std::exception& e)
-	{
-		server.send_message_to_fd(this->fd, e.what());
 	}
 }
 
@@ -88,6 +86,12 @@ void Client::setIsPasswordAllowed(bool is_password_allowed)
 {
 	this->is_password_allowed = is_password_allowed;
 }
+
+void Client::setChannel(Channel* channel)
+{
+	this->channel = channel;
+}
+
 
 
 /*//////////////////////////////////////////////////////////////////////////////*/
@@ -140,4 +144,10 @@ bool Client::getIsRegistered(void) const
 {
 	return (this->is_registered);
 }
+
+Channel* Client::getChannel(void) const
+{
+	return (this->channel);
+}
+
 

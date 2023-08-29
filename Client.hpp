@@ -14,6 +14,7 @@ class Client
 	private:
 		int fd;
 		Server &server;
+		Channel* channel;
 
 		bool is_registered;
 		bool is_password_allowed;
@@ -45,6 +46,7 @@ class Client
 		std::string getHostname(void) const;
 		std::string getServername(void) const;
 		std::string getRealname(void) const;
+		Channel* getChannel(void) const;
 
 		void setNickname(const std::string &nickname);
 		void setUsername(const std::string &username);
@@ -53,6 +55,7 @@ class Client
 		void setRealname(const std::string &realname);
 		void setIsRegistered(bool is_registered);
 		void setIsPasswordAllowed(bool is_password_allowed);
+		void setChannel(Channel* channel);
 };
 
 #endif
