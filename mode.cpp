@@ -20,8 +20,7 @@ void Parser::cmd_mode(const std::string &mode)
 	std::string ch = channel->getName();
 	if (ch[0] == '+')
 	{
-		// code ??
-		this->_server.send_message_to_fd(_client.getFd(), ":irc_server NOTICE : This channel is not supported mode\r\n");
+		this->_server.send_message_to_channel(channel->getName(), ":" + _client.getNickname() + " MODE " + channel->getName() + " :Can't support MODE in this channel\r\n");
 		return ;
 	}
 	if (!channel->is_invited(_client.getNickname()))

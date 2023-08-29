@@ -365,27 +365,26 @@ void Parser::cmd_kick()
     Client *client = this->_server.getClient(this->_tokens[2]);
 	if (channel == NULL)
     {
-		this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[1] + " : No such channel");
+		this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[1] + " :No such channel");
         return ;
     }
     if (client == NULL)
     {
-        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[2] + " : No such nick");
+        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[2] + " :No such nick");
         return ;
     }
     if (!channel->is_invited(client->getNickname()))
     {
-        this->_server.send_message_to_client_with_code(_client, "441", this->_tokens[2] + " " + this->_tokens[1] + " : They aren't on that channel");
+        this->_server.send_message_to_client_with_code(_client, "441", this->_tokens[2] + " " + this->_tokens[1] + " :They aren't on that channel");
         return ;
     }
     if (!channel->is_operator(this->_client))
     {
-        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[1] + " : You're not channel operator");
+        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[1] + " :You're not channel operator");
         return ;
     }
     channel->deleteClient(client->getNickname());
-    this->_server.send_message_to_channel(this->_tokens[1], ":" + this->_client.getNickname() + " KICK " + this->_tokens[1] + " " + this->_tokens[2] + " : Kicked by " + this->_client.getNickname() + "\r\n");
-    
+    this->_server.send_message_to_channel(this->_tokens[1], ":" + this->_client.getNickname() + " KICK " + this->_tokens[1] + " " + this->_tokens[2] + ": kick by " + _client.getNickname() + " \r\n");
 }
 
 void Parser::cmd_topic()
