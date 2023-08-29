@@ -74,6 +74,8 @@ void Parser::what_is_this()
             cmd_pass();
         else if(this->_tokens[0] == "PRIVMSG")
             cmd_privmsg();
+        else if(this->_tokens[0] == "TOPIC")
+            cmd_topic();
     //     else if(this->_tokens[0] == "LIST")
     //         cmd_list();
     //     else if(this->_tokens[0] == "PART")
@@ -92,8 +94,6 @@ void Parser::what_is_this()
     //         cmd_invite();
     //     else if(this->_tokens[0] == "KICK")
     //         cmd_kick();
-    //     else if(this->_tokens[0] == "TOPIC")
-    //         cmd_topic();
     //     else if(this->_tokens[0] == "EXIT")
     //         cmd_exit();
     }
