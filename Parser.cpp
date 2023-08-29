@@ -283,7 +283,24 @@ void Parser::cmd_invite()
 
 void Parser::cmd_kick()
 {
-
+    Channel *channel = this->_server.getChannel(this->_tokens[1]);
+	if (channel == NULL)
+		this->_server.send_message_to_client_with_code(_client, "403", str[0] + " :No such channel");
+    else
+    {
+        if (channel->isUserInChannel(this->_client.getNickname()))
+        {
+            if (channel->isUserOperator(this->_client.getNickname()))
+            {
+                this->_server.send_message_to_channel(channel, "KICK " + channel->getName() + " " + this->_tokens[2] + " :Kicked by " + this->_client.getNickname());
+                this->_server.client_disconnect_from_channel(&(this->_client));
+            }
+            else
+                this->_server.send_message_to_client_with_code(this->_client, "482", ":You're not channel operator");
+        }
+        else
+            this->_server.send_message_to_client_with_code(this->_client, "442", ":You're not on that channel");
+    }
 }
 
 void Parser::cmd_topic()
