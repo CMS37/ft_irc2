@@ -361,13 +361,13 @@ Client *Server::getClient(const std::string &nickname)
 
 void Server::send_message_to_fd(int fd, std::string message)
 {
-	std::cout << ">>>message_sent_to_fd: " << message << "\n\n";
+	std::cout << ">>>message_sent_to_fd: " << message << std::endl;
 	send(fd, message.c_str(), message.length(), 0);
 }
 
 void Server::send_message_to_client_with_code(Client &cli, std::string code, std::string message)
 {
-	std::string msg = ":" + hostname + " " + code + " " + cli.getNickname() + " " + message + "\n";
+	std::string msg = ":" + hostname + " " + code + " " + cli.getNickname() + " " + message + "\r\n";
 	send_message_to_fd(cli.getFd(), msg);
 }
 
