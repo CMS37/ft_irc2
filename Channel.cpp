@@ -63,11 +63,11 @@ bool Channel::checkKey(const std::string &key)
 	return (false);
 }
 
-void Channel::addClient(Client &client)
+void Channel::addClient(const Client &client)
 {
 	if (limit_set && invited.size() >= limit)
 	{
-		std::string msg = ":irc_server 471 "+ client.getNickname() + " :Cannot join channel (+l)\n";
+		std::string msg = ":irc_server 471 "+ client.getNickname() + ": Cannot join channel (+l)\n";
 		//code 471 "<channel> :Cannot join channel (+l)"
 		throw std::invalid_argument(msg);
 		return ;
@@ -81,6 +81,7 @@ void Channel::addClient(Client &client)
 				//code 473 "<channel> :Cannot join channel (+i)"
 				std::string msg = ":irc_server 473 "+ client.getNickname() + " :Cannot join channel (+i)\n";
 				throw std::invalid_argument(msg);
+				return ;
 			}
 		}
 	}
