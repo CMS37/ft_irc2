@@ -372,6 +372,12 @@ void Server::send_message_to_client_with_code(const Client &cli, std::string cod
 	send_message_to_fd(cli.getFd(), msg);
 }
 
+void Server::send_message_to_channel_with_code(std::string channel_name, const Client &cli, std::string code, std::string message)
+{
+	std::string msg = ":" + hostname + " " + code + " " + cli.getNickname() + " " + message + "\r\n";
+	send_message_to_channel(channel_name, msg);
+}
+
 void Server::send_message_to_channel(std::string channel_name, std::string message)
 {
 	std::cout << "@@@@message_sent_to_channel: " << message << std::endl;
