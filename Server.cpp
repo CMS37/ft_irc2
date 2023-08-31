@@ -374,20 +374,31 @@ void Server::send_message_to_client_with_code(Client &cli, std::string code, std
 void Server::send_message_to_channel(std::string channel_name, std::string message)
 {
 	std::cout << "@@@@message_sent_to_channel: " << message << std::endl;
-	std::map<std::string, Channel *>::iterator cha_it;
-
-	for(cha_it = this->channels.begin(); cha_it != this->channels.end(); cha_it++)
+	std::map<std::string, Channel *>::iterator cha_it = this->channels.find(channel_name);
+	
+	if (cha_it == this->channels.end())
 	{
-		if (cha_it->first == channel_name)
-		{
-			std::vector<Client *> invited = cha_it->second->getInvited();
-			std::vector<Client *>::iterator cli_it;
-
-			for(cli_it = invited.begin(); cli_it != invited.end(); cli_it++)
-			{
-				send_message_to_fd((*cli_it)->getFd(), message);
-			}
-			return ;
-		}
+		return ;
 	}
+	std::vector<Client *> invited = cha_it->second->getInvited();
+	for(std::vector<Client *> ::iterator cli_it = invited.begin(); cli_it != invited.end(); cli_it++)
+	{
+		send_message_to_fd((*cli_it)->getFd(), message);
+	}
+
+
+	// for(cha_it = this->channels.begin(); cha_it != this->channels.end(); cha_it++)
+	// {
+	// 	if (cha_it->first == channel_name)
+	// 	{
+	// 		std::vector<Client *> invited = cha_it->second->getInvited();
+	// 		std::vector<Client *>::iterator cli_it;
+
+	// 		for(cli_it = invited.begin(); cli_it != invited.end(); cli_it++)
+	// 		{
+	// 			send_message_to_fd((*cli_it)->getFd(), message);
+	// 		}
+	// 		return ;
+	// 	}
+	// }
 }
