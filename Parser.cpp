@@ -18,7 +18,11 @@
 
 Parser::Parser(Server& server, Client& client, std::string str) : _server(server), _client(client), _str(str)
 {
-    this->_tokens = split(_str, ' ');
+    // this->_tokens = split(_str, ' ');
+    std::stringstream ss(str);
+    std::string temp;
+    while(ss >> temp)
+        this->_tokens.push_back(temp);
 }
 
 Parser::~Parser() {}
@@ -62,7 +66,7 @@ void Parser::what_is_this()
 			{
 				modeArgs += _tokens[i];
 				if (i < _tokens.size() - 1)
-        		    modeArgs += " ";
+                    modeArgs += " ";
 			}
 			cmd_mode(modeArgs);
 		}
@@ -78,10 +82,10 @@ void Parser::what_is_this()
             cmd_kick();
         else if(this->_tokens[0] == "INVITE")
             cmd_invite();
+        else if(this->_tokens[0] == "PART")
+            cmd_part();
     //     else if(this->_tokens[0] == "LIST")
     //         cmd_list();
-    //     else if(this->_tokens[0] == "PART")
-    //         cmd_part();
     //     else if(this->_tokens[0] == "NAMES")
     //         cmd_names();
     //     else if(this->_tokens[0] == "HELP")
@@ -101,18 +105,6 @@ void Parser::what_is_this()
     }
 
 }
-
-// std::vector<std::string> Parser::split(std::string input, char delimiter)
-// {
-//     std::vector<std::string> answer;
-//     std::stringstream ss(input);
-//     std::string temp;
-
-//     while(getline(ss, temp, delimiter))
-//         answer.push_back(temp);
-
-//     return answer;
-// }
 
 void Parser::setString(std::string str)
 {
@@ -151,10 +143,69 @@ void Parser::cmd_join()
         this->_client.joinChannel(this->_tokens[1], this->_tokens[2]);
 }
 
-// void Parser::cmd_part()
-// {
-//     this->_client->partChannel(this->_tokens[1]);
-// }
+void Parser::cmd_part()
+{
+    if(!this->_client.getIsRegistered())
+        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
+    if(this->_tokens.size() != 2)
+    {
+        this->_server.send_message_to_client_with_code(this->_client, "461", "PART :Not enough parameters");
+        return;
+    }
+
+    Channel *channel = this->_server.getChannel(this->_tokens[1]);
+    if (channel == NULL)
+    {
+        this->_server.send_message_to_client_with_code(this->_client, "403", this->_tokens[1] + " :No such channel");
+        return ;
+    }
+    if (!channel->is_invited(this->_client.getNickname()))
+    {
+        this->_server.send_message_to_client_with_code(this->_client, "442", this->_tokens[1] + " :You're not on that channel");
+        return ;
+    }
+    
+    channel->deleteClient(this->_client.getNickname());
+    
+    // std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() + " PART " + this->_tokens[1] + "\r\n";
+    // this->_server.send_message_to_channel(this->_tokens[1], msg);
+    // this->_server.send_message_to_fd(this->_client.getFd(), msg);
+
+    // msg = this->_client.getNickname() + " Channel :Users Name\r\n";
+    // this->_server.send_message_to_client_with_code(this->_client, "321", msg);
+    // this->_server.send_message_to_channel_with_code(this->_tokens[1], this->_client, "321", msg);
+
+    // msg = this->_client.getNickname() + " " + this->_tokens[1] + "0 :is\r\n";
+    // this->_server.send_message_to_client_with_code(this->_client, "322", msg);
+    // this->_server.send_message_to_channel_with_code(this->_tokens[1], this->_client, "322", msg);
+
+    // msg = this->_client.getNickname() + " :End of /LIST\r\n";
+    // this->_server.send_message_to_client_with_code(this->_client, "323", msg);
+    // this->_server.send_message_to_channel_with_code(this->_tokens[1], this->_client, "323", msg);
+
+
+
+//     Command is: |PART|[ #here ]
+// Response to send is 
+// |:siykim!siyoungkim@:ft_irc.de PART #here
+// | to: siykim
+
+// Message to the channel is 
+// |:siykim!siyoungkim@:ft_irc.de PART #here
+// | to: #here
+
+// Response to send is 
+// |:ft_irc.de 321 siykim Channel :Users Name
+// :ft_irc.de 322 siykim #here 0 :is
+// :ft_irc.de 323 siykim End of /LIST
+// | to: siykim
+
+// Message to the channel is 
+// |:ft_irc.de 321 siykim Channel :Users Name
+// :ft_irc.de 322 siykim #here 0 :is
+// :ft_irc.de 323 siykim End of /LIST
+// | to: #here
+}
 
 // void Parser::cmd_names()
 // {
@@ -238,16 +289,13 @@ void Parser::cmd_pass()
 void Parser::cmd_privmsg()
 {
     if(!this->_client.getIsRegistered())
-        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
-        if(!this->_client.getIsRegistered())
-        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
-    if(this->_tokens.size() < 2)
     {
-        this->_server.send_message_to_client_with_code(this->_client, "461", "PRIVMSG :Not enough parameters");
+        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
         return;
     }
 
-    std::vector<std::string> targets = split(this->_tokens[1], ',');
+    
+    std::string target_channel = this->_tokens[1];
     std::string message;
     for(unsigned int i = 2; i < this->_tokens.size(); i++)
     {
@@ -256,25 +304,53 @@ void Parser::cmd_privmsg()
             message += " ";
     }
 
-    for(unsigned int i = 0; i < targets.size(); i++)
-    {
-        if(targets[i][0] == '#')
-        {
-            Channel *channel = this->_server.getChannel(targets[i]);
-            if(channel == NULL)
-                this->_server.send_message_to_client_with_code(this->_client, "401", targets[i] + " :No such nick/channel");
-            else
-                this->_server.send_message_to_channel(targets[i], message);
-        }
-        else
-        {
-            Client *client = this->_server.getClient(targets[i]);
-            if(client == NULL)
-                this->_server.send_message_to_client_with_code(this->_client, "401", targets[i] + " :No such nick/channel");
-            else
-                this->_server.send_message_to_fd(client->getFd(), ":" + this->_client.getNickname() + " PRIVMSG " + targets[i] + " :" + message + "\r\n");
-        }
-    }
+    this->_server.send_message_to_channel(target_channel, 
+    ":" + this->_client.getNickname() + "!" + this->_client.getHostname() + "@:" + this->_server.getHostname() + " PRIVMSG " + target_channel + " :" + message + "\r\n");
+
+
+
+
+
+
+        //|PRIVMSG|[ #here hi ]
+        //:siykim!siyoungkim@:ft_irc.de PRIVMSG #here :hi 
+
+
+
+    // if(this->_tokens.size() < 2)
+    // {
+    //     this->_server.send_message_to_client_with_code(this->_client, "461", "PRIVMSG :Not enough parameters");
+    //     return;
+    // }
+
+    // std::vector<std::string> targets = split(this->_tokens[1], ',');
+    // std::string message;
+    // for(unsigned int i = 2; i < this->_tokens.size(); i++)
+    // {
+    //     message += this->_tokens[i];
+    //     if(i < this->_tokens.size() - 1)
+    //         message += " ";
+    // }
+
+    // for(unsigned int i = 0; i < targets.size(); i++)
+    // {
+    //     if(targets[i][0] == '#')
+    //     {
+    //         Channel *channel = this->_server.getChannel(targets[i]);
+    //         if(channel == NULL)
+    //             this->_server.send_message_to_client_with_code(this->_client, "401", targets[i] + " :No such nick/channel");
+    //         else
+    //             this->_server.send_message_to_channel(targets[i], message);
+    //     }
+    //     else
+    //     {
+    //         Client *client = this->_server.getClient(targets[i]);
+    //         if(client == NULL)
+    //             this->_server.send_message_to_client_with_code(this->_client, "401", targets[i] + " :No such nick/channel");
+    //         else
+    //             this->_server.send_message_to_fd(client->getFd(), ":" + this->_client.getNickname() + " PRIVMSG " + targets[i] + " :" + message + "\r\n");
+    //     }
+    // }
 
 
 }
@@ -389,39 +465,25 @@ void Parser::cmd_kick()
 
 void Parser::cmd_topic()
 {
-    //전면 수정 필요
-    if(this->_tokens.size() == 2)
+    std::string chan_name = this->_tokens[1];
+    std::string topic;
+    for(unsigned int i = 2; i < this->_tokens.size(); i++)
     {
-        if(this->_client.getChannel() != NULL)
-            this->_server.send_message_to_client_with_code(this->_client, "322", this->_client.getChannel()->getName() + " :" + this->_client.getChannel()->getTopic());
-        else
-        {
-            Channel* chan = this->_server.getChannel(this->_tokens[1]);
-            if(chan != NULL)
-                this->_server.send_message_to_client_with_code(this->_client, "322", chan->getName() + " :" + chan->getTopic());
-            else
-                this->_server.send_message_to_client_with_code(this->_client, "403", this->_tokens[1] + " :No such channel");
-        }
+        topic += this->_tokens[i];
+        if(i < this->_tokens.size() - 1)
+            topic += " ";
+    }
+    topic = topic.substr(1, topic.size() - 1);
+
+    Channel *channel = this->_server.getChannel(chan_name);
+    if (channel == NULL)
+    {
+        this->_server.send_message_to_client_with_code(_client, "403", chan_name + " :No such channel");
+        return ;
     }
     else
     {
-        Channel* chan = this->_server.getChannel(this->_tokens[1]);
-        if(chan == NULL)
-        {
-            this->_server.send_message_to_client_with_code(this->_client, "403", this->_tokens[1] + " :No such channel");
-            return;
-        }
-
-        std::string topic_str;
-        for(unsigned int i = 1; i < this->_tokens.size(); i++)
-        {
-            topic_str += this->_tokens[i];
-            if(i < this->_tokens.size() - 1)
-                topic_str += " ";
-        }
-
-        chan->setTopic(topic_str);
-        this->_server.send_message_to_client_with_code(this->_client, "322", chan->getName() + " :" + chan->getTopic());
+        this->_server.send_message_to_fd(this->_client.getFd(), ":" + this->_client.getNickname() + "!" + this->_client.getHostname() + "@" + this->_server.getHostname() + " TOPIC " + chan_name + " :" + topic + "\r\n");
     }
 }
 

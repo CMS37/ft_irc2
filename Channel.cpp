@@ -63,7 +63,7 @@ bool Channel::checkKey(const std::string &key)
 	return (false);
 }
 
-void Channel::addClient(const Client &client)
+void Channel::addClient(Client &client)
 {
 	if (limit_set && invited.size() >= limit)
 	{
