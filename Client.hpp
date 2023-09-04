@@ -14,6 +14,7 @@ class Client
 	private:
 		int fd;
 		Server &server;
+		std::vector<Channel*> joined_channels;
 		Channel* channel;
 
 		bool is_registered;

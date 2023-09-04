@@ -4,7 +4,10 @@ Client::Client(int fd, Server &server) : fd(fd), server(server), channel(NULL), 
 {
 }
 
-Client::~Client() {}
+Client::~Client()
+{
+
+}
 
 Client::Client(const Client &f) : fd(f.fd), server(f.server), channel(f.channel), is_registered(f.is_registered), is_password_allowed(f.is_password_allowed), nickname(f.nickname)
 {
@@ -31,7 +34,7 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 		channels.insert(std::pair<std::string, Channel *>(name, channel));
 		channel->setOperator(*this);
 		channel->addClient(*this);
-		this->channel = channel;
+		joined_channels.push_back(channel);
 	}
 	else
 	{
@@ -40,8 +43,29 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 			this->server.send_message_to_client_with_code(*this, "475", name + " :Cannot join channel (+k)");
 		else
 		{
-			channel->addClient(*this);
-			this->channel = channel;
+			try
+			{
+				channel->addClient(*this);
+				if (std::vector<Channel *>::iterator it = std::find(joined_channels.begin(), joined_channels.end(), channel) == joined_channels.end())
+					joined_channels.push_back(channel);
+			}
+			catch(const std::exception& e)
+			{
+				this->server.send_message_to_fd(this->fd, e.what());
+			}
+		}
+	}
+}
+
+void Client::deleteJoinedChannel(const std::string &name)
+{
+	std::vector<Channel *>::iterator it;
+	for (it = joined_channels.begin(); it != joined_channels.end(); it++)
+	{
+		if ((*it)->getName() == name)
+		{
+			joined_channels.erase(it);
+			break;
 		}
 	}
 }
