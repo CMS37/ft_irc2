@@ -228,9 +228,6 @@ void Parser::cmd_mode(const std::string &mode)
 //    MODE #42 -k oulu                ; Command to remove the "oulu"
 //                                    channel key on channel "#42".
 
-// Kalt                         Informational                     [Page 18]
-// RFC 2812          Internet Relay Chat: Client Protocol        April 2000
-
 //    MODE #eu-opers +l 10            ; Command to set the limit for the
 //                                    number of users on channel
 //                                    "#eu-opers" to 10.

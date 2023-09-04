@@ -57,9 +57,6 @@ void Parser::cmd_kick()
 //            ERR_BADCHANMASK                 ERR_CHANOPRIVSNEEDED
 //            ERR_USERNOTINCHANNEL            ERR_NOTONCHANNEL
 
-// Kalt                         Informational                     [Page 22]
-// RFC 2812          Internet Relay Chat: Client Protocol        April 2000
-
 //    Examples:
 
 //    KICK &Melbourne Matthew         ; Command to kick Matthew from
