@@ -368,7 +368,12 @@ void Server::send_message_to_fd(int fd, std::string message)
 
 void Server::send_message_to_client_with_code(const Client &cli, std::string code, std::string message)
 {
-	std::string msg = ":" + hostname + " " + code + " " + cli.getNickname() + " " + message + "\r\n";
+	std::string nick;
+	if (cli.getNickname() == "")
+		nick = "*";
+	else
+		nick = cli.getNickname();
+	std::string msg = ":" + hostname + " " + code + " " + nick + " " + message + "\r\n";
 	send_message_to_fd(cli.getFd(), msg);
 }
 

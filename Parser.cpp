@@ -47,9 +47,9 @@ void Parser::what_is_this()
 			std::string modeArgs;
 			for (unsigned long i = 1; i < _tokens.size(); i++)
 			{
-				modeArgs += _tokens[i];
+				modeArgs.append(_tokens[i]);
 				if (i < _tokens.size() - 1)
-                    modeArgs += " ";
+                    modeArgs.append(" ");
 			}
 			cmd_mode(modeArgs);
 		}

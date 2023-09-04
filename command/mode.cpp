@@ -1,15 +1,7 @@
 #include "../Parser.hpp"
 
-void Parser::cmd_mode(const std::string &mode)
+void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 {
-	std::vector<std::string> str = split(mode, ' ');
-
-	if (_client.getNickname() == str[0] && str[1][0] == '+' && str[1][1] == 'i' && str.size() == 2)
-	{
-		//code 324 "<channel> +<mode> <mode params>"
-		this->_server.send_message_to_fd(_client.getFd(), ": Set default mode [+i]\r\n"); // 무슨역할인가...채널없는상태의 유저초대권한?어디로?
-		return ;
-	}
 	Channel *channel = _server.getChannel(str[0]);
 	if (channel == NULL)
 	{
@@ -171,6 +163,39 @@ void Parser::cmd_mode(const std::string &mode)
 	std::cout << "argv: " << argv << std::endl;
 	std::cout << "==============================" << std::endl;
 	this->_server.send_message_to_channel(channel->getName(), ":" + _client.getNickname() + " MODE " + channel->getName() + " :" + seting + argv + "\r\n");
+}
+
+void Parser::cmd_mode_user(const std::vector<std::string> &str)
+{
+	if (_client.getNickname() == str[0])
+	{
+		std::string msg;
+		if (str[1] == "+i")
+			// _client->setHostname(); 서버시작할때 ip유무 물어보기
+		else if (str[1] == "-i")
+			// _client->setHostname(); 
+		msg.append(":" + _client.getNickname() + "!" + _client.getUsername() + "@" + _client.getHostname() + " MODE " + _client.getNickname() + " " + str[1] + "\r\n");
+		this->_server.send_message_to_fd(_client.getFd(), msg);
+	}
+	else
+		this->_server.send_message_to_client_with_code(_client, "502", ":Cant change mode for other users");
+}
+
+void Parser::cmd_mode(const std::string &mode)
+{
+	std::vector<std::string> str = split(mode, ' ');
+
+	if (mode.empty())
+	{
+		// code 461 "<command> :Not enough parameters"
+		this->_server.send_message_to_client_with_code(_client, "461", "MODE :Not enough parameters");
+		return ;
+	}
+
+	if (str[0][0] == '#' || str[0][0] == '&' || str[0][0] == '!' || str[0][0] == '+')
+		cmd_mode_channel(str);
+	else
+		cmd_mode_user(str);
 }
 
 //         MODE - 채널 모드 및 구성원의 권한 변경
