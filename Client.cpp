@@ -4,7 +4,10 @@ Client::Client(int fd, Server &server) : fd(fd), server(server), channel(NULL), 
 {
 }
 
-Client::~Client() {}
+Client::~Client()
+{
+	
+}
 
 Client::Client(const Client &f) : fd(f.fd), server(f.server), channel(f.channel), is_registered(f.is_registered), is_password_allowed(f.is_password_allowed), nickname(f.nickname)
 {
@@ -31,7 +34,7 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 		channels.insert(std::pair<std::string, Channel *>(name, channel));
 		channel->setOperator(*this);
 		channel->addClient(*this);
-		this->channel = channel;
+		joined_channels.push_back(channel);
 	}
 	else
 	{
@@ -41,7 +44,7 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 		else
 		{
 			channel->addClient(*this);
-			this->channel = channel;
+			joined_channels.push_back(channel);
 		}
 	}
 }

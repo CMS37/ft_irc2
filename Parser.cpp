@@ -32,23 +32,6 @@ void Parser::what_is_this()
 {
     try
     {
-        // if(!this->_client.getIsRegistered())
-        //     this->_server.send_message_to_client_with_code(this->_client, "451", ":You have not registered");
-        /*
-            이게더 나을꺼같아요 이건 본인 편하신대로 하셔요 확인하구 지우셔도됩니다.
-            map(명령어, 함수포인터)
-            for (std::map<std::string, void (Parser::*)().iterator it = _cmd.begin(); it != _cmd.end(); it++)
-            {
-                if (this->_tokens[0] == it->first)
-                    (this->*(it->second))(_tokens[1]]);
-            }
-            파싱할때 커맨드는 첫줄바꿈 전까지만 받아서 토큰으로 나눠서 저장해놓고
-            토큰[0]이랑 맵의 키랑 비교해서 함수포인터를 실행시키는 방식으로
-            토큰[1]은 안나누고 그대로 전달해서 커맨드에서 처리하게
-        */
-        // for(unsigned int i = 0; i < this->_tokens.size(); i++)
-        // std::cout << "token " << i << ": " << this->_tokens[i] << std::endl;
-
         if (this->_tokens[0] == "CAP")
             cmd_cap();
         else if(this->_tokens[0] == "JOIN")
@@ -132,7 +115,10 @@ void Parser::cmd_join()
 {
 
     if(!this->_client.getIsRegistered())
+    {
         this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
+        return ;
+    }
 
     std::string channelName(this->_tokens[1]);
     if (this->_tokens.size() == 2) // /join #channel
@@ -402,17 +388,17 @@ void Parser::cmd_invite()
     Channel *channel = this->_server.getChannel(this->_tokens[2]);
     if (channel == NULL)
     {
-        this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[2] + ": No such channel");
+        this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[2] + ":No such channel");
         return ;
     }
     if (client == NULL)
     {
-        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[1] + ": No such nick");
+        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[1] + ":No such nick");
         return ;
     }
     if (!channel->is_operator(this->_client))
     {
-        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[2] + ": You're not channel operator");
+        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[2] + ":You're not channel operator");
         return ;
     }
     if (channel->is_invited(client->getNickname()))
@@ -460,7 +446,8 @@ void Parser::cmd_kick()
         return ;
     }
     channel->deleteClient(client->getNickname());
-    this->_server.send_message_to_channel(this->_tokens[1], ":" + this->_client.getNickname() + " KICK " + this->_tokens[1] + " " + this->_tokens[2] + ": kick by " + _client.getNickname() + " \r\n");
+    this->_server.send_message_to_channel(this->_tokens[1], ":" + this->_client.getNickname() + " KICK " + this->_tokens[1] + " " + this->_tokens[2] + ":kick by " + _client.getNickname() + " \r\n");
+    this->_server.send_message_to_fd(client->getFd(), ":" + this->_client.getNickname() + " KICK " + this->_tokens[1] + " " + this->_tokens[2] + ":kick by " + _client.getNickname() + " \r\n");
 }
 
 void Parser::cmd_topic()
