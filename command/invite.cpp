@@ -26,17 +26,19 @@ void Parser::cmd_invite()
         this->_server.send_message_to_client_with_code(_client, "443", this->_tokens[2] + " " + this->_tokens[1] + " :is already on channel");
         return ;
     }
-    this->_server.send_message_to_client_with_code(_client, "341", this->_tokens[1] + " " + this->_tokens[2] + " :Inviting " + this->_tokens[1] + " to " + this->_tokens[2]);
+
     try
     {
         channel->addClient(*client);
+        this->_server.send_message_to_client_with_code(*client, "341", this->_tokens[2] + " " + this->_tokens[1] + " :has been invited by " + this->_client.getNickname());
+        std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() +" INVITE " + this->_tokens[1] + ":" + this->_tokens[2] + "\r\n";
+        this->_server.send_message_to_channel(channel->getName(), msg);
     }
     catch(const std::exception& e)
     {
         this->_server.send_message_to_fd(this->_client.getFd(), e.what());
         return ;
     }
-    std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() +" INVITE " + this->_tokens[1] + ":" + this->_tokens[2] + "\r\n";
 }
 
 // 3.2.7 Invite message

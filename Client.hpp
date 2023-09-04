@@ -17,6 +17,8 @@ class Client
 		std::vector<Channel*> joined_channels;
 		Channel* channel;
 
+		std::vector<char> modes;
+
 		bool is_registered;
 		bool is_password_allowed;
 		
