@@ -445,9 +445,11 @@ void Parser::cmd_kick()
         this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[1] + " :You're not channel operator");
         return ;
     }
+    std::string msg = ":" + this->_client.getNickname() + " KICK " + this->_tokens[1] + " " + this->_tokens[2] + " :kick by " + _client.getNickname() + "\r\n";
+    this->_server.send_message_to_channel(this->_tokens[1], msg);
+    this->_server.send_message_to_fd(client->getFd(), msg);
     channel->deleteClient(client->getNickname());
-    this->_server.send_message_to_channel(this->_tokens[1], ":" + this->_client.getNickname() + " KICK " + this->_tokens[1] + " " + this->_tokens[2] + ":kick by " + _client.getNickname() + " \r\n");
-    this->_server.send_message_to_fd(client->getFd(), ":" + this->_client.getNickname() + " KICK " + this->_tokens[1] + " " + this->_tokens[2] + ":kick by " + _client.getNickname() + " \r\n");
+    client->deleteJoinedChannel(channel->getName());
 }
 
 void Parser::cmd_topic()

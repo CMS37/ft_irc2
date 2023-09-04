@@ -6,7 +6,7 @@ Client::Client(int fd, Server &server) : fd(fd), server(server), channel(NULL), 
 
 Client::~Client()
 {
-	
+
 }
 
 Client::Client(const Client &f) : fd(f.fd), server(f.server), channel(f.channel), is_registered(f.is_registered), is_password_allowed(f.is_password_allowed), nickname(f.nickname)
@@ -45,6 +45,19 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 		{
 			channel->addClient(*this);
 			joined_channels.push_back(channel);
+		}
+	}
+}
+
+void Client::deleteJoinedChannel(const std::string &name)
+{
+	std::vector<Channel *>::iterator it;
+	for (it = joined_channels.begin(); it != joined_channels.end(); it++)
+	{
+		if ((*it)->getName() == name)
+		{
+			joined_channels.erase(it);
+			break;
 		}
 	}
 }
