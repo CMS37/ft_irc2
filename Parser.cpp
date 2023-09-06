@@ -120,12 +120,12 @@ void Parser::cmd_cap()
     {
         this->_server.send_message_to_fd(this->_client.getFd(), "CAP * LS :End of CAP LS negotiation\n");
     }
-    else if (this->_tokens[1] == "END")
-    {
-        this->_server.send_message_to_fd(this->_client.getFd(), "CAP * END :End of CAP LS negotiation\n");
-    }
-    else
-        throw std::invalid_argument("Wrong argument\n");
+    // else if (this->_tokens[1] == "END")
+    // {
+    //     this->_server.send_message_to_fd(this->_client.getFd(), "CAP * END :End of CAP LS negotiation\n");
+    // }
+    // else
+    //     throw std::invalid_argument("Wrong argument\n");
 }
 
 void Parser::cmd_join()
@@ -167,9 +167,9 @@ void Parser::cmd_part()
     
     channel->deleteClient(this->_client.getNickname());
     
-    // std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() + " PART " + this->_tokens[1] + "\r\n";
-    // this->_server.send_message_to_channel(this->_tokens[1], msg);
-    // this->_server.send_message_to_fd(this->_client.getFd(), msg);
+    std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() + " PART " + this->_tokens[1] + "\r\n";
+    this->_server.send_message_to_channel(this->_tokens[1], msg);
+    this->_server.send_message_to_fd(this->_client.getFd(), msg);
 
     // msg = this->_client.getNickname() + " Channel :Users Name\r\n";
     // this->_server.send_message_to_client_with_code(this->_client, "321", msg);
@@ -229,6 +229,10 @@ void Parser::cmd_nick()
 		this->_server.send_message_to_client_with_code(this->_client, "433", nickname + " :Nickname is already in use");
 	else
     {
+        if(this->_client.getNickname() == "")
+            this->_server.send_message_to_fd(this->_client.getFd(), ":! NICK " + nickname + "\r\n");
+        else
+            this->_server.send_message_to_fd(this->_client.getFd(), ":" + this->_client.getNickname() + "!" + this->_client.getHostname() + " NICK " + nickname + "\r\n");
         this->_client.setNickname(nickname);
 		this->_server.registrate(this->_client);
     }
