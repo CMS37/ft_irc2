@@ -103,12 +103,12 @@ void Parser::cmd_cap()
     {
         this->_server.send_message_to_fd(this->_client.getFd(), "CAP * LS :End of CAP LS negotiation\n");
     }
-    else if (this->_tokens[1] == "END")
-    {
-        this->_server.send_message_to_fd(this->_client.getFd(), "CAP * END :End of CAP LS negotiation\n");
-    }
-    else
-        throw std::invalid_argument("Wrong argument\n");
+    // else if (this->_tokens[1] == "END")
+    // {
+    //     this->_server.send_message_to_fd(this->_client.getFd(), "CAP * END :End of CAP LS negotiation\n");
+    // }
+    // else
+    //     throw std::invalid_argument("Wrong argument\n");
 }
 
 // void Parser::cmd_names()
