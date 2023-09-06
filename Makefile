@@ -9,10 +9,21 @@ SRCS =	main.cpp \
 		Client.cpp \
 		Server.cpp \
 		Parser.cpp \
-		mode.cpp \
 		Channel.cpp \
 		utils.cpp \
-
+		command/invite.cpp \
+		command/join.cpp \
+		command/kick.cpp \
+		command/mode.cpp \
+		command/nick.cpp \
+		command/part.cpp \
+		command/pass.cpp \
+		command/ping.cpp \
+		command/privmsg.cpp \
+		command/quit.cpp \
+		command/time.cpp \
+		command/topic.cpp \
+		command/user.cpp
 
 OBJS := ${SRCS:%.cpp=${OBJS_DIR}/%.o}
 
