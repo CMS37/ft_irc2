@@ -112,7 +112,7 @@ void Server::client_disconnect(size_t i)
 	delete clients[fd];
 	clients.erase(fd);
 	close(fd);
-	fds.erase(fds.begin() + i); //SEGFUALT
+	fds.erase(fds.begin() + i);
 }
 
 void Server::read_client_data(size_t i)
@@ -147,7 +147,6 @@ void Server::read_client_data(size_t i)
 		}
 		// Parser parser(*this , *clients[fds[i].fd], sbuf);
 		// parser.what_is_this();
-		lines.clear();
 	}
 }
 

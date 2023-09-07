@@ -6,7 +6,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 	if (channel == NULL)
 	{
 		// code 403 "<channel> :No such channel"
-		this->_server.send_message_to_client_with_code(_client, "403", str[0] + " : No such channel");
+		this->_server.send_message_to_client_with_code(_client, "403", str[0] + " :No such channel");
 		return ;
 	}
 	std::string ch = channel->getName();
@@ -19,13 +19,13 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 	{
 		std::cout << _client.getNickname() << std::endl;
 		// code 441 "<nickname> <channel> :They aren't on that channel"
-		this->_server.send_message_to_client_with_code(_client, "441", _client.getNickname() + " " + str[0] + " : They aren't on that channel");
+		this->_server.send_message_to_client_with_code(_client, "441", _client.getNickname() + " " + str[0] + " :They aren't on that channel");
 		return ;
 	}
 	else if (!channel->is_operator(_client))
 	{
 		// code 482 "<channel> :You're not channel operator"
-		this->_server.send_message_to_client_with_code(_client, "482", str[0] + " : You're not channel operator");
+		this->_server.send_message_to_client_with_code(_client, "482", str[0] + " :You're not channel operator");
 		return ;
 	}
 	std::vector<std::string> seting;
@@ -33,12 +33,8 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 	std::string set = str[1];
 	std::string::iterator it = set.begin() + 1;
 	size_t i = 2;
-	bool pos;
+	bool pos = set[0] == '+'; // true: +, false: -
 
-	if (set[0] == '+')
-		pos = true;
-	else if (set[0] == '-')
-		pos = false;
 	for (; it != set.end(); ++it)
 	{
 		switch(*it)

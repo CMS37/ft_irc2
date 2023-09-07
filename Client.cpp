@@ -9,8 +9,9 @@ Client::~Client()
 
 }
 
-Client::Client(const Client &f) : fd(f.fd), server(f.server), channel(f.channel), is_registered(f.is_registered), is_password_allowed(f.is_password_allowed), nickname(f.nickname)
+Client::Client(const Client &f) : server(f.server)
 {
+	*this = f;
 }
 
 Client &Client::operator=(const Client &f)
@@ -18,8 +19,18 @@ Client &Client::operator=(const Client &f)
 	if (this != &f)
 	{
 		this->fd = f.fd;
-		this->nickname = f.nickname;
 		this->server = f.server;
+		this->joined_channels = f.joined_channels;
+		this->channel = f.channel;
+		this->is_registered = f.is_registered;
+		this->is_password_allowed = f.is_password_allowed;
+		this->nickname = f.nickname;
+		this->username = f.username;
+		this->hostname = f.hostname;
+		this->servername = f.servername;
+		this->realname = f.realname;
+		this->mode = f.mode;
+		this->message = f.message;
 	}
 	return (*this);
 }
@@ -63,6 +74,16 @@ void Client::deleteJoinedChannel(const std::string &name)
 			joined_channels.erase(it);
 			break;
 		}
+	}
+}
+
+
+void Client::quitAll(void)
+{
+	std::vector<Channel *>::iterator it;
+	for (it = joined_channels.begin(); it != joined_channels.end(); it++)
+	{
+		(*it)->deleteClient(this->nickname);
 	}
 }
 

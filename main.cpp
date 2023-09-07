@@ -1,9 +1,16 @@
 #include "Server.hpp"
 
+// void a(void)
+// {
+// 	system("leaks server");
+// }
+
+
 int main(int argc, char **argv)
 {
 	Server server;
 
+	// atexit(a);
 	try
 	{
 		server.input(argc, argv);

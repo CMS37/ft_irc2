@@ -82,14 +82,11 @@ bool Channel::addClient(Client &client)
 		}
 	}
 
-	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + "JOIN :" + name + "\r\n");
+	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
 	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
 	client.getServer().send_message_to_channel(name, client.getNickname() + " has joined " + this->name + "\r\n");
-	if(this->topic.empty())
-		client.getServer().send_message_to_client_with_code(client, "331", name + " :No topic is set\r\n");
-	else
+	if(!this->topic.empty())
 		client.getServer().send_message_to_client_with_code(client, "332", name + " :" + topic + "\r\n");
-
 	client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :" + client.getNickname() + "\r\n");
 	client.getServer().send_message_to_client_with_code(client, "366", name + " :End of /NAMES list\r\n");
 
@@ -181,9 +178,6 @@ void Channel::setOperator(const Client &client)
 	{
 		if ((*it)->getNickname() == client.getNickname())
 		{
-			// Parser parser;
-			// std::string line = "PRIVMSG " + client.getNickname() + " :You are already operator";
-			// parser.cmd_privmsg(line);
 			return ;
 		}
 	}
@@ -201,7 +195,6 @@ void Channel::unsetOperator(const Client &client)
 			return ;
 		}
 	}
-	throw std::invalid_argument("You are not operator");
 }
 
 void Channel::unsetTopic(void)
