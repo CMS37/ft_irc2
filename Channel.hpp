@@ -19,8 +19,7 @@ class Channel
 		std::string key;
 		size_t limit;
 
-		std::vector<char> setmodes;
-		std::vector<char> unsetmodes;
+		std::vector<std::string> setmodes;
 		bool invite_only;
 		bool use_key;
 		bool topic_set;
@@ -43,8 +42,7 @@ class Channel
 		bool getLimitSet(void) const;
 		bool getUseKey(void) const;
 		std::vector<Client *> getInvited(void) const;
-		std::vector<char> getSetModes(void) const;
-		std::vector<char> getUnsetModes(void) const;
+		std::vector<std::string> getSetModes(void) const;
 
 		void setOperator(const Client &client);
 		void setTopic(const std::string &topic);
