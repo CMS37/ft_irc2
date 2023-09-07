@@ -62,13 +62,13 @@ bool Channel::checkKey(const std::string &key)
 	return (false);
 }
 
-void Channel::addClient(Client &client)
+bool Channel::addClient(Client &client)
 {
 	if (limit_set && invited.size() >= limit)
 	{
 		std::string msg = ":irc_server 471 "+ client.getNickname() + " :Cannot join channel (+l)\r\n";
-		throw std::invalid_argument(msg);
-		return ;
+		client.getServer().send_message_to_fd(client.getFd(), msg);
+		return (false);
 	}
 	if (invite_only)
 	{
@@ -77,8 +77,8 @@ void Channel::addClient(Client &client)
 			if ((*it)->getNickname() == client.getNickname())
 			{
 				std::string msg = ":irc_server 473 "+ client.getNickname() + " :Cannot join channel (+i)\r\n";
-				throw std::invalid_argument(msg);
-				return ;
+				client.getServer().send_message_to_fd(client.getFd(), msg);
+				return (false);
 			}
 		}
 	}
@@ -97,6 +97,7 @@ void Channel::addClient(Client &client)
 
 	Client *new_client = new Client(client);
 	invited.push_back(new_client);
+	return (true);
 }
 
 
@@ -271,7 +272,7 @@ std::vector<Client *> Channel::getInvited(void) const
 	return (invited);
 }
 
-std::vector<std::string> Channel::getSetModes(void) const
+std::vector<std::string> &Channel::getSetModes(void)
 {
 	return (setmodes);
 }

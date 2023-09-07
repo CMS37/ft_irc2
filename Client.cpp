@@ -31,9 +31,9 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 	if (channels.find(name) == channels.end())
 	{
 		Channel *channel = new Channel(name, key);
-		channels.insert(std::pair<std::string, Channel *>(name, channel));
-		channel->setOperator(*this);
 		channel->addClient(*this);
+		channel->setOperator(*this);
+		channels.insert(std::pair<std::string, Channel *>(name, channel));
 		joined_channels.push_back(channel);
 	}
 	else
@@ -43,16 +43,11 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 			this->server.send_message_to_client_with_code(*this, "475", name + " :Cannot join channel (+k)");
 		else
 		{
-			try
+			if (channel->addClient(*this))
 			{
-				channel->addClient(*this);
 				std::vector<Channel *>::iterator it = std::find(joined_channels.begin(), joined_channels.end(), channel);
 				if (it == joined_channels.end())
 					joined_channels.push_back(channel);
-			}
-			catch(const std::exception& e)
-			{
-				this->server.send_message_to_fd(this->fd, e.what());
 			}
 		}
 	}
