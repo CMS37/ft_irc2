@@ -237,7 +237,7 @@ void Parser::cmd_mode(const std::string &mode)
 
 	if (str[0][0] == '#' || str[0][0] == '&' || str[0][0] == '!' || str[0][0] == '+')
 	{
-		if (mode.size() == 1)
+		if (str.size() == 1)
 			mode_list_channel(str);
 		else
 			cmd_mode_channel(str);
