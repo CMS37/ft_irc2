@@ -208,6 +208,7 @@ void Parser::mode_list_channel(const std::vector<std::string> &str)
 {
 	std::string msg;
 	Channel *channel = _server.getChannel(str[0]);
+	msg.append(":");
 	msg.append(_server.getHostname());
 	msg.append(" MODE ");
 	msg.append(str[0]);

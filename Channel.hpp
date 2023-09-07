@@ -2,12 +2,14 @@
 # define CHANNEL_HPP
 
 # include "Server.hpp"
+# include "Parser.hpp"
 # include <iostream>
 # include <vector>
 # include <exception>
 
 class Server;
 class Client;
+class Parser;
 
 class Channel
 {

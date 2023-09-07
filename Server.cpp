@@ -4,7 +4,7 @@
 
 bool running;
 
-Server::Server(): hostname(":irc_server")
+Server::Server(): hostname("irc_server")
 {
 
 }

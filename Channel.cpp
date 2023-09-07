@@ -84,7 +84,7 @@ bool Channel::addClient(Client &client)
 	}
 
 	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + "JOIN :" + name + "\r\n");
-	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + "JOIN :" + name + "\r\n");
+	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
 	client.getServer().send_message_to_channel(name, client.getNickname() + " has joined " + this->name + "\r\n");
 	if(this->topic.empty())
 		client.getServer().send_message_to_client_with_code(client, "331", name + " :No topic is set\r\n");
@@ -181,7 +181,12 @@ void Channel::setOperator(const Client &client)
 	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
 	{
 		if ((*it)->getNickname() == client.getNickname())
-			throw std::invalid_argument("You are already operator");
+		{
+			Parser parser;
+			std::string line = "PRIVMSG " + client.getNickname() + " :You are already operator";
+			parser.cmd_privmsg(line);
+			return ;
+		}
 	}
 	op.push_back(new Client(client));
 }
