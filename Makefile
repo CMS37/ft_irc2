@@ -31,6 +31,7 @@ all: ${NAME}
 
 ${OBJS_DIR}:
 	@mkdir ${OBJS_DIR}
+	@mkdir ${OBJS_DIR}/command
 
 ${NAME}: ${OBJS}
 	@${CXX} -o ${NAME} ${OBJS}

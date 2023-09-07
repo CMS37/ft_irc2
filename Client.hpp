@@ -5,6 +5,7 @@
 # include <iostream>
 # include <exception>
 # include <map>
+# include <vector>
 
 class Server;
 class Channel;
@@ -14,10 +15,10 @@ class Client
 	private:
 		int fd;
 		Server &server;
-		std::vector<Channel*> joined_channels;
+		std::vector<Channel *> joined_channels;
 		Channel* channel;
 
-		std::vector<char> modes;
+		// std::vector<char> modes;
 
 		bool is_registered;
 		bool is_password_allowed;
@@ -38,6 +39,7 @@ class Client
 		Client &operator=(const Client &f);
 
 		void joinChannel(const std::string &name, const std::string &key);
+		void deleteJoinedChannel(const std::string &name);
 
 
 		int getFd(void) const;
