@@ -28,7 +28,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 		this->_server.send_message_to_client_with_code(_client, "482", str[0] + " : You're not channel operator");
 		return ;
 	}
-	std::string seting;
+	std::vector<std::string> seting;
 	std::string argv;
 	std::string set = str[1];
 	std::string::iterator it = set.begin() + 1;
@@ -67,12 +67,12 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 					Client *client = _server.getClient(str[i]);
 					if (pos)
 					{
-						seting += "+o "; 
+						seting.push_back("+o"); 
 						channel->setOperator(*client);
 					}
 					else
 					{
-						seting += "-o ";
+						seting.push_back("-o");
 						channel->unsetOperator(*client);
 					}
 				}
@@ -82,12 +82,12 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 			case 'i':
 				if (pos)
 				{
-					seting += "+i ";
+					seting.push_back("+i");
 					channel->setInviteOnly(true);
 				}
 				else
 				{
-					seting += "-i ";
+					seting.push_back("-i");
 					channel->setInviteOnly(false);
 				}
 				break;
@@ -102,12 +102,12 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 				{
 					if (pos)
 					{
-						seting += "+k ";
+						seting.push_back("+k");
 						channel->setKey(str[i]);
 					}
 					else
 					{
-						seting += "-k ";
+						seting.push_back("-k");
 						channel->unsetKey(str[i]);
 					}
 				}
@@ -117,12 +117,12 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 			case 't':
 				if (pos)
 				{
-					seting += "+t ";
+					seting.push_back("+t");
 					channel->setTopic("");
 				}
 				else
 				{
-					seting += "-t ";
+					seting.push_back("-t");
 					channel->unsetTopic();
 				}
 				argv = str[i] + " ";
@@ -131,7 +131,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 			case 'l':
 				if (!pos)
 				{
-					seting += "-l ";
+					seting.push_back("-l");
 					channel->unsetLimit();
 				}
 				else
@@ -143,7 +143,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 						return ;
 					}
 					channel->setLimit(atoi(str[i].c_str()));
-					seting += "+l ";
+					seting.push_back("+l");
 					argv = str[i] + " ";
 					i++;
 				}
@@ -158,11 +158,34 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 				return ;
 		}
 	}
+	std::vector<std::string> setmodes = channel->getSetModes();
+	for (std::vector<std::string>::iterator it = seting.begin(); it != seting.end(); ++it)
+	{
+		if ((*it)[0] == '+')
+		{
+			bool flag = false;
+			for (std::vector<std::string>::iterator it2 = setmodes.begin(); it2 != setmodes.end(); ++it2)
+			{
+				if (*it == *it2)
+				{
+					flag = true;
+					break ;
+				}
+			}
+
+			if (!flag)
+				setmodes.push_back(*it);
+		}
+	}
+
+	std::string tmp;
+	for (std::vector<std::string>::iterator it = seting.begin(); it != seting.end(); ++it)
+		tmp.append(*it + " ");
 	std::cout << "=============MODE=============" << std::endl;
-	std::cout << "seting: " << seting << std::endl;
+	std::cout << "seting: " << tmp << std::endl;
 	std::cout << "argv: " << argv << std::endl;
 	std::cout << "==============================" << std::endl;
-	this->_server.send_message_to_channel(channel->getName(), ":" + _client.getNickname() + " MODE " + channel->getName() + " :" + seting + argv + "\r\n");
+	this->_server.send_message_to_channel(channel->getName(), ":" + _client.getNickname() + " MODE " + channel->getName() + " :" + tmp + argv + "\r\n");
 }
 
 void Parser::cmd_mode_user(const std::vector<std::string> &str)
@@ -181,6 +204,26 @@ void Parser::cmd_mode_user(const std::vector<std::string> &str)
 		this->_server.send_message_to_client_with_code(_client, "502", ":Cant change mode for other users");
 }
 
+void Parser::mode_list_channel(const std::vector<std::string> &str)
+{
+	std::string msg;
+	Channel *channel = _server.getChannel(str[0]);
+	msg.append(":");
+	msg.append(_server.getHostname());
+	msg.append(" MODE ");
+	msg.append(str[0]);
+	msg.append(":");
+	std::vector<std::string> setModes = channel->getSetModes();
+	std::vector<std::string>::iterator it = setModes.begin();
+	for (; it != setModes.end(); ++it)
+	{
+		msg.append(*it);
+		msg.append(" ");
+	}
+	msg.append("\r\n");
+	this->_server.send_message_to_fd(_client.getFd(), msg);
+}
+
 void Parser::cmd_mode(const std::string &mode)
 {
 	std::vector<std::string> str = split(mode, ' ');
@@ -193,7 +236,12 @@ void Parser::cmd_mode(const std::string &mode)
 	}
 
 	if (str[0][0] == '#' || str[0][0] == '&' || str[0][0] == '!' || str[0][0] == '+')
-		cmd_mode_channel(str);
+	{
+		if (mode.size() == 1)
+			mode_list_channel(str);
+		else
+			cmd_mode_channel(str);
+	}
 	else
 		cmd_mode_user(str);
 }

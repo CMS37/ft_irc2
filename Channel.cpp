@@ -47,7 +47,6 @@ Channel &Channel::operator=(const Channel &f)
 		this->key = f.key;
 		this->limit = f.limit;
 		this->setmodes = f.setmodes;
-		this->unsetmodes = f.unsetmodes;
 		this->invite_only = f.invite_only;
 		this->use_key = f.use_key;
 		this->topic_set = f.topic_set;
@@ -272,12 +271,7 @@ std::vector<Client *> Channel::getInvited(void) const
 	return (invited);
 }
 
-std::vector<char> Channel::getSetModes(void) const
+std::vector<std::string> Channel::getSetModes(void) const
 {
 	return (setmodes);
-}
-
-std::vector<char> Channel::getUnsetModes(void) const
-{
-	return (unsetmodes);
 }
