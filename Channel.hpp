@@ -2,12 +2,14 @@
 # define CHANNEL_HPP
 
 # include "Server.hpp"
+# include "Parser.hpp"
 # include <iostream>
 # include <vector>
 # include <exception>
 
 class Server;
 class Client;
+class Parser;
 
 class Channel
 {
@@ -41,7 +43,7 @@ class Channel
 		bool getTopicSet(void) const;
 		bool getLimitSet(void) const;
 		bool getUseKey(void) const;
-		std::vector<Client *> getInvited(void) const;
+		std::vector<Client *> &getInvited(void);
 		std::vector<std::string> &getSetModes(void);
 
 		void setOperator(const Client &client);

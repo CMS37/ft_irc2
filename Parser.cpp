@@ -25,7 +25,10 @@ Parser::Parser(Server& server, Client& client, std::string str) : _server(server
         this->_tokens.push_back(temp);
 }
 
-Parser::~Parser() {}
+Parser::~Parser()
+{
+
+}
 
 
 void Parser::what_is_this()

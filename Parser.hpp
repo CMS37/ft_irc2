@@ -11,7 +11,9 @@
 # include <sstream>
 
 
+class Server;
 class Client;
+
 
 class Parser
 {

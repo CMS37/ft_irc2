@@ -74,23 +74,19 @@ bool Channel::addClient(Client &client)
 	{
 		for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
 		{
-			if ((*it)->getNickname() == client.getNickname())
+			if ((*it)->getNickname() != client.getNickname() && it == invited.end() - 1)
 			{
-				std::string msg = ":irc_server 473 "+ client.getNickname() + " :Cannot join channel (+i)\r\n";
-				client.getServer().send_message_to_fd(client.getFd(), msg);
+				client.getServer().send_message_to_client_with_code(client, "473", name + " :Cannot join channel (+i)\r\n");
 				return (false);
 			}
 		}
 	}
 
-	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + "JOIN :" + name + "\r\n");
-	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + "JOIN :" + name + "\r\n");
+	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
+	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
 	client.getServer().send_message_to_channel(name, client.getNickname() + " has joined " + this->name + "\r\n");
-	if(this->topic.empty())
-		client.getServer().send_message_to_client_with_code(client, "331", name + " :No topic is set\r\n");
-	else
+	if(!this->topic.empty())
 		client.getServer().send_message_to_client_with_code(client, "332", name + " :" + topic + "\r\n");
-
 	client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :" + client.getNickname() + "\r\n");
 	client.getServer().send_message_to_client_with_code(client, "366", name + " :End of /NAMES list\r\n");
 
@@ -181,7 +177,9 @@ void Channel::setOperator(const Client &client)
 	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
 	{
 		if ((*it)->getNickname() == client.getNickname())
-			throw std::invalid_argument("You are already operator");
+		{
+			return ;
+		}
 	}
 	op.push_back(new Client(client));
 }
@@ -197,7 +195,6 @@ void Channel::unsetOperator(const Client &client)
 			return ;
 		}
 	}
-	throw std::invalid_argument("You are not operator");
 }
 
 void Channel::unsetTopic(void)
@@ -267,7 +264,7 @@ bool Channel::getUseKey(void) const
 	return (use_key);
 }
 
-std::vector<Client *> Channel::getInvited(void) const
+std::vector<Client *> &Channel::getInvited(void)
 {
 	return (invited);
 }
