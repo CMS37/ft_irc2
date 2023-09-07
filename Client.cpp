@@ -46,7 +46,8 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 			try
 			{
 				channel->addClient(*this);
-				if (std::vector<Channel *>::iterator it = std::find(joined_channels.begin(), joined_channels.end(), channel) == joined_channels.end())
+				std::vector<Channel *>::iterator it = std::find(joined_channels.begin(), joined_channels.end(), channel);
+				if (it == joined_channels.end())
 					joined_channels.push_back(channel);
 			}
 			catch(const std::exception& e)
