@@ -43,7 +43,7 @@ class Channel
 		bool getTopicSet(void) const;
 		bool getLimitSet(void) const;
 		bool getUseKey(void) const;
-		std::vector<Client *> getInvited(void) const;
+		std::vector<Client *> &getInvited(void);
 		std::vector<std::string> &getSetModes(void);
 
 		void setOperator(const Client &client);

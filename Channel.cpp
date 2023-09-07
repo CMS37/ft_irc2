@@ -74,10 +74,9 @@ bool Channel::addClient(Client &client)
 	{
 		for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
 		{
-			if ((*it)->getNickname() == client.getNickname())
+			if ((*it)->getNickname() != client.getNickname() && it == invited.end() - 1)
 			{
-				std::string msg = ":irc_server 473 "+ client.getNickname() + " :Cannot join channel (+i)\r\n";
-				client.getServer().send_message_to_fd(client.getFd(), msg);
+				client.getServer().send_message_to_client_with_code(client, "473", name + " :Cannot join channel (+i)\r\n");
 				return (false);
 			}
 		}
@@ -182,9 +181,9 @@ void Channel::setOperator(const Client &client)
 	{
 		if ((*it)->getNickname() == client.getNickname())
 		{
-			Parser parser;
-			std::string line = "PRIVMSG " + client.getNickname() + " :You are already operator";
-			parser.cmd_privmsg(line);
+			// Parser parser;
+			// std::string line = "PRIVMSG " + client.getNickname() + " :You are already operator";
+			// parser.cmd_privmsg(line);
 			return ;
 		}
 	}
@@ -272,7 +271,7 @@ bool Channel::getUseKey(void) const
 	return (use_key);
 }
 
-std::vector<Client *> Channel::getInvited(void) const
+std::vector<Client *> &Channel::getInvited(void)
 {
 	return (invited);
 }
