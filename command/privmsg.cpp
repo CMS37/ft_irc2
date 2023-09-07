@@ -18,55 +18,12 @@ void Parser::cmd_privmsg()
             message += " ";
     }
 
-    this->_server.send_message_to_channel(target_channel, 
+    this->_server.send_message_to_channel_except_myself(this->_client.getFd(), target_channel, 
     ":" + this->_client.getNickname() + "!" + this->_client.getHostname() + "@:" + this->_server.getHostname() + " PRIVMSG " + target_channel + " :" + message + "\r\n");
-
-
-
-
 
 
         //|PRIVMSG|[ #here hi ]
         //:siykim!siyoungkim@:ft_irc.de PRIVMSG #here :hi 
-
-
-
-    // if(this->_tokens.size() < 2)
-    // {
-    //     this->_server.send_message_to_client_with_code(this->_client, "461", "PRIVMSG :Not enough parameters");
-    //     return;
-    // }
-
-    // std::vector<std::string> targets = split(this->_tokens[1], ',');
-    // std::string message;
-    // for(unsigned int i = 2; i < this->_tokens.size(); i++)
-    // {
-    //     message += this->_tokens[i];
-    //     if(i < this->_tokens.size() - 1)
-    //         message += " ";
-    // }
-
-    // for(unsigned int i = 0; i < targets.size(); i++)
-    // {
-    //     if(targets[i][0] == '#')
-    //     {
-    //         Channel *channel = this->_server.getChannel(targets[i]);
-    //         if(channel == NULL)
-    //             this->_server.send_message_to_client_with_code(this->_client, "401", targets[i] + " :No such nick/channel");
-    //         else
-    //             this->_server.send_message_to_channel(targets[i], message);
-    //     }
-    //     else
-    //     {
-    //         Client *client = this->_server.getClient(targets[i]);
-    //         if(client == NULL)
-    //             this->_server.send_message_to_client_with_code(this->_client, "401", targets[i] + " :No such nick/channel");
-    //         else
-    //             this->_server.send_message_to_fd(client->getFd(), ":" + this->_client.getNickname() + " PRIVMSG " + targets[i] + " :" + message + "\r\n");
-    //     }
-    // }
-
-
 }
 
 // 3.3.1 Private messages

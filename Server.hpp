@@ -5,6 +5,7 @@
 # include "Channel.hpp"
 # include "Parser.hpp"
 # include <iostream>
+# include <algorithm>
 # include <cstring>
 # include <cstdlib>
 # include <vector>
@@ -76,6 +77,7 @@ class Server
 
 		void send_message_to_fd(int fd, std::string message);
 		void send_message_to_channel(std::string channel, std::string message);
+		void send_message_to_channel_except_myself(int fd, std::string channel_name, std::string message);
 		void send_message_to_channel_with_code(std::string channel_name, const Client &cli, std::string code, std::string message);
 		void send_message_to_client_with_code(const Client &cli, std::string code, std::string message);
 
