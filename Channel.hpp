@@ -42,7 +42,7 @@ class Channel
 		bool getLimitSet(void) const;
 		bool getUseKey(void) const;
 		std::vector<Client *> getInvited(void) const;
-		std::vector<std::string> getSetModes(void) const;
+		std::vector<std::string> &getSetModes(void);
 
 		void setOperator(const Client &client);
 		void setTopic(const std::string &topic);
@@ -55,7 +55,7 @@ class Channel
 		void unsetLimit(void);
 		void unsetOperator(const Client &client);
 	
-		void addClient(Client &client);
+		bool addClient(Client &client);
 		void deleteClient(const std::string &nickname);
 
 		void printInfo(void);

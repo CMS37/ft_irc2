@@ -158,7 +158,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 				return ;
 		}
 	}
-	std::vector<std::string> setmodes = channel->getSetModes();
+	std::vector<std::string> &setmodes = channel->getSetModes();
 	for (std::vector<std::string>::iterator it = seting.begin(); it != seting.end(); ++it)
 	{
 		if ((*it)[0] == '+')
@@ -208,7 +208,6 @@ void Parser::mode_list_channel(const std::vector<std::string> &str)
 {
 	std::string msg;
 	Channel *channel = _server.getChannel(str[0]);
-	msg.append(":");
 	msg.append(_server.getHostname());
 	msg.append(" MODE ");
 	msg.append(str[0]);
