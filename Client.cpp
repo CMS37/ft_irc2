@@ -42,8 +42,8 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 	if (channels.find(name) == channels.end())
 	{
 		Channel *channel = new Channel(name, key);
-		channel->addClient(*this);
 		channel->setOperator(*this);
+		channel->addClient(*this);
 		channels.insert(std::pair<std::string, Channel *>(name, channel));
 		joined_channels.push_back(channel);
 	}
