@@ -5,11 +5,11 @@ void Parser::cmd_pass()
     if(this->_tokens.size() != 2)
         this->_server.send_message_to_client_with_code(this->_client, "461", "PASS :Not enough parameters");
     else if(this->_client.getIsRegistered())
-        this->_server.send_message_to_client_with_code(this->_client, "462", ":You may not reregister");
+        this->_server.send_message_to_client_with_code(this->_client, "462", " :You may not reregister");
 
     std::string password = parse_pw(this->_tokens[1]);
     if (password != _server.getPassword())
-        this->_server.send_message_to_client_with_code(this->_client, "464", ":Password incorrect");
+        this->_server.send_message_to_client_with_code(this->_client, "464", " :Password incorrect");
     else
         this->_client.setIsPasswordAllowed(true);
 }
