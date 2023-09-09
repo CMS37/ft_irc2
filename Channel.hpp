@@ -53,7 +53,7 @@ class Channel
 		void setLimit(size_t limit);
 
 		void unsetTopic(void);
-		void unsetKey(const std::string &key);
+		void unsetKey(void);
 		void unsetLimit(void);
 		void unsetOperator(const Client &client);
 	

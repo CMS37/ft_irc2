@@ -83,12 +83,12 @@ bool Channel::addClient(Client &client)
 	}
 
 	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
-	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
+	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN " + name + "\r\n");
 	client.getServer().send_message_to_channel(name, client.getNickname() + " has joined " + this->name + "\r\n");
 	if(!this->topic.empty())
 		client.getServer().send_message_to_client_with_code(client, "332", name + " :" + topic + "\r\n");
-	client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :" + client.getNickname() + "\r\n");
-	client.getServer().send_message_to_client_with_code(client, "366", name + " :End of /NAMES list\r\n");
+	client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :@" + client.getNickname() + "\r\n");
+	client.getServer().send_message_to_client_with_code(client, "366", name + " :End of NAMES list\r\n");
 
 
 	Client *new_client = new Client(client);
@@ -203,18 +203,10 @@ void Channel::unsetTopic(void)
 	topic_set = false;
 }
 
-void Channel::unsetKey(const std::string &key)
+void Channel::unsetKey(void)
 {
-	if (this->key != key)
-	{
-		//code 475 "<channel> :Bad channel key"
-		throw std::invalid_argument("Wrong key");
-	}
-	else
-	{
 		this->key.clear();
 		use_key = false;
-	}
 }
 
 void Channel::unsetLimit(void)

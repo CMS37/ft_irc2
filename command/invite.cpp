@@ -8,17 +8,17 @@ void Parser::cmd_invite()
     Channel *channel = this->_server.getChannel(this->_tokens[2]);
     if (channel == NULL)
     {
-        this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[2] + ":No such channel");
+        this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[2] + " :No such channel");
         return ;
     }
     if (client == NULL)
     {
-        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[1] + ":No such nick");
+        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[1] + " :No such nick");
         return ;
     }
     if (!channel->is_operator(this->_client))
     {
-        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[2] + ":You're not channel operator");
+        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[2] + " :You're not channel operator");
         return ;
     }
     if (channel->is_invited(client->getNickname()))

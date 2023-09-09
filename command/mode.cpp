@@ -35,8 +35,8 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 	size_t i = 2;
 	bool pos = set[0] == '+'; // true: +, false: -
 
-	for (; it != set.end(); ++it)
-	{
+	for  ( ; it != set.end(); ++it)
+	{	
 		switch(*it)
 		{
 			case '+':
@@ -72,7 +72,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 						channel->unsetOperator(*client);
 					}
 				}
-				argv = str[i] + " ";
+				argv += str[i] + " ";
 				i++;
 				break;
 			case 'i':
@@ -98,17 +98,17 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 				{
 					if (pos)
 					{
-						seting.push_back("+k");
 						channel->setKey(str[i]);
+						seting.push_back("+k");
+						argv += str[i] + " ";
+						i++;
 					}
 					else
 					{
+						channel->unsetKey();
 						seting.push_back("-k");
-						channel->unsetKey(str[i]);
 					}
 				}
-				argv = str[i] + " ";
-				i++;
 				break;
 			case 't':
 				if (pos)
@@ -121,7 +121,6 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 					seting.push_back("-t");
 					channel->unsetTopic();
 				}
-				argv = str[i] + " ";
 				i++;
 				break;
 			case 'l':
@@ -138,10 +137,13 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 						this->_server.send_message_to_client_with_code(_client, "461", str[0] + " :Not enough parameters");
 						return ;
 					}
-					channel->setLimit(atoi(str[i].c_str()));
-					seting.push_back("+l");
-					argv = str[i] + " ";
-					i++;
+					else if (!isNum(str[1]))
+					{
+						channel->setLimit(atoi(str[i].c_str()));
+						seting.push_back("+l");
+						argv += str[i] + " ";
+						i++;
+					}
 				}
 				break;
 			case 'e':
@@ -208,7 +210,7 @@ void Parser::mode_list_channel(const std::vector<std::string> &str)
 	msg.append(_server.getHostname());
 	msg.append(" MODE ");
 	msg.append(str[0]);
-	msg.append(":");
+	msg.append(" :");
 	std::vector<std::string> setModes = channel->getSetModes();
 	std::vector<std::string>::iterator it = setModes.begin();
 	for (; it != setModes.end(); ++it)
