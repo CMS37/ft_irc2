@@ -206,7 +206,7 @@ void Channel::unsetTopic(void)
 	topic_set = false;
 }
 
-void Channel::unsetKey(void1)
+void Channel::unsetKey(void)
 {
 	this->key.clear();
 	use_key = false;
