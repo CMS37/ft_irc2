@@ -48,8 +48,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 			case 'o':
 				if (str.size() < i + 1)
 				{
-					// code 461 "<channel> :Not enough parameters"
-					this->_server.send_message_to_client_with_code(_client, "461", str[0] + " :Not enough parameters");
+					this->_server.send_message_to_client_with_code(_client, "461", "MODE :Not enough parameters (o)");
 					return ;
 				}
 				else if (!channel->is_invited(str[i]))
@@ -90,8 +89,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 			case 'k':
 				if (str.size() < i + 1)
 				{
-					// code 461 "<channel> :Not enough parameters"
-					this->_server.send_message_to_client_with_code(_client, "461", str[0] + " :Not enough parameters");
+					this->_server.send_message_to_client_with_code(_client, "461", "MODE :Not enough parameters (k)");
 					return ;
 				}
 				else
@@ -133,8 +131,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 				{
 					if (str.size() < i + 1)
 					{
-						// code 461 "<channel> :Not enough parameters"
-						this->_server.send_message_to_client_with_code(_client, "461", str[0] + " :Not enough parameters");
+						this->_server.send_message_to_client_with_code(_client, "461", "MODE :Not enough parameters (+l)");
 						return ;
 					}
 					else if (!isNum(str[1]))
@@ -228,7 +225,6 @@ void Parser::cmd_mode(const std::string &mode)
 
 	if (mode.empty())
 	{
-		// code 461 "<command> :Not enough parameters"
 		this->_server.send_message_to_client_with_code(_client, "461", "MODE :Not enough parameters");
 		return ;
 	}

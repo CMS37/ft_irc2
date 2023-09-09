@@ -54,6 +54,7 @@ class Parser
         void mode_list_channel(const std::vector<std::string> &str);
         void cmd_exit();
         void cmd_pass();
+        void cmd_whois();
 
 
 };

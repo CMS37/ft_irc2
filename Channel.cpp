@@ -87,7 +87,10 @@ bool Channel::addClient(Client &client)
 	client.getServer().send_message_to_channel(name, client.getNickname() + " has joined " + this->name + "\r\n");
 	if(!this->topic.empty())
 		client.getServer().send_message_to_client_with_code(client, "332", name + " :" + topic + "\r\n");
-	client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :@" + client.getNickname() + "\r\n");
+	if (is_operator(client))
+		client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :@" + client.getNickname() + "\r\n");
+	else
+		client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :" + client.getNickname() + "\r\n");
 	client.getServer().send_message_to_client_with_code(client, "366", name + " :End of NAMES list\r\n");
 
 
@@ -203,10 +206,10 @@ void Channel::unsetTopic(void)
 	topic_set = false;
 }
 
-void Channel::unsetKey(void)
+void Channel::unsetKey(void1)
 {
-		this->key.clear();
-		use_key = false;
+	this->key.clear();
+	use_key = false;
 }
 
 void Channel::unsetLimit(void)
