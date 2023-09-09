@@ -5,7 +5,7 @@ void Parser::cmd_nick()
     std::string nickname(this->_tokens[1]);
 
     if (this ->_tokens.size() != 2)
-		this->_server.send_message_to_client_with_code(this->_client, "461", "NICK : wrong number of arguments");
+		this->_server.send_message_to_client_with_code(this->_client, "461", "NICK :wrong number of arguments");
 	else if (contains(nickname, ":/\0"))
 		this->_server.send_message_to_client_with_code(this->_client, "432", nickname + " :Erroneus nickname");
 	else if (this->_server.check_nickname(nickname))

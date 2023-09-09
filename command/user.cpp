@@ -7,7 +7,7 @@ void Parser::cmd_user()
     
     this->_client.setUsername(this->_tokens[1]);
     this->_client.setHostname(this->_tokens[2]);
-    this->_client.setServername(this->_tokens[3]);
+    this->_client.setServername(this->_tokens[3]); //서버이름그냥 호스트네임으로?
     this->_client.setRealname(this->_tokens[4]);
 
     this->_server.registrate(this->_client);

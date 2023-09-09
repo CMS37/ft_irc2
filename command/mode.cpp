@@ -196,7 +196,7 @@ void Parser::cmd_mode_user(const std::vector<std::string> &str)
 		this->_server.send_message_to_fd(_client.getFd(), msg);
 	}
 	else
-		this->_server.send_message_to_client_with_code(_client, "502", ":Cant change mode for other users");
+		this->_server.send_message_to_client_with_code(_client, "502", " :Cant change mode for other users");
 }
 
 void Parser::mode_list_channel(const std::vector<std::string> &str)
