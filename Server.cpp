@@ -46,7 +46,7 @@ void Server::input(int argc, char **argv)
 	else
 	{
 		this->port = atoi(argv[1]);
-		if (this->port < 0 || this->port > 65535)
+		if (this->port < 6660 || this->port > 6669)
 			throw std::invalid_argument("port number is invalid");
 		this->password = argv[2];
 	}
