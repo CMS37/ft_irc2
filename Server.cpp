@@ -121,7 +121,7 @@ std::vector<std::string> Server::parse_recieved(std::string &sbuf, Client &cli)
 	cli.setMessageBuffer("");
 	std::vector<std::string> lines = split(str, '\n');
 
-	if(lines.back().back() != '\n')
+	if(sbuf.substr(sbuf.length() - 2, 2) != "\r\n")
 	{
 		cli.setMessageBuffer(lines.back());
 		lines.pop_back();

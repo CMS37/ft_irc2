@@ -30,7 +30,7 @@ Client &Client::operator=(const Client &f)
 		this->servername = f.servername;
 		this->realname = f.realname;
 		this->mode = f.mode;
-		this->message = f.message;
+		this->message_buffer = f.message_buffer;
 	}
 	return (*this);
 }
