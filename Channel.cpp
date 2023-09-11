@@ -23,12 +23,6 @@ Channel::Channel(const std::string &name, const std::string &key) : name(name), 
 
 Channel::~Channel()
 {
-	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
-		delete (*it);
-	for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
-		delete (*it);
-	op.clear();
-	invited.clear();
 }
 
 Channel::Channel(const Channel &f)
@@ -66,11 +60,10 @@ bool Channel::addClient(Client &client)
 {
 	if (limit_set && invited.size() >= limit)
 	{
-		std::string msg = ":irc_server 471 "+ client.getNickname() + " :Cannot join channel (+l)\r\n";
-		client.getServer().send_message_to_fd(client.getFd(), msg);
+		client.getServer().send_message_to_client_with_code(client, "471", name + " :Cannot join channel (+l)");
 		return (false);
 	}
-	if (invite_only)
+	else if (invite_only)
 	{
 		for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
 		{
@@ -81,8 +74,8 @@ bool Channel::addClient(Client &client)
 			}
 		}
 	}
-	Client *new_client = new Client(client);
-	invited.push_back(new_client);
+	else if (is_invited(client.getNickname()) == false)
+		invited.push_back(&client);
 
 	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
 	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN " + name + "\r\n");
@@ -181,7 +174,7 @@ void Channel::setLimit(size_t limit)
 	limit_set = true;
 }
 
-void Channel::setOperator(const Client &client)
+void Channel::setOperator(Client &client)
 {
 	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
 	{
@@ -190,16 +183,15 @@ void Channel::setOperator(const Client &client)
 			return ;
 		}
 	}
-	op.push_back(new Client(client));
+	op.push_back(&client);
 }
 
-void Channel::unsetOperator(const Client &client)
+void Channel::unsetOperator(Client &client)
 {
 	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
 	{
 		if ((*it)->getNickname() == client.getNickname())
 		{
-			delete (*it);
 			op.erase(it);
 			return ;
 		}

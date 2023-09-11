@@ -22,6 +22,10 @@ void Parser::cmd_topic()
     {
         this->_server.send_message_to_client_with_code(_client, "331", chan_name + " :No topic is set");
     }
+    else if (!channel->is_operator(this->_client))
+    {
+        this->_server.send_message_to_client_with_code(_client, "482", chan_name + " :You're not channel operator");
+    }
     else
     {
         this->_server.send_message_to_channel(chan_name, ":" + this->_client.getNickname() + "!" + this->_client.getHostname() + "@" + this->_server.getHostname() + " TOPIC " + chan_name + " :" + topic + "\r\n");

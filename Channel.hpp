@@ -46,7 +46,7 @@ class Channel
 		std::vector<Client *> &getInvited(void);
 		std::vector<std::string> &getSetModes(void);
 
-		void setOperator(const Client &client);
+		void setOperator(Client &client);
 		void setTopic(const std::string &topic);
 		void setInviteOnly(bool value);
 		void setKey(const std::string &key);
@@ -55,7 +55,7 @@ class Channel
 		void unsetTopic(void);
 		void unsetKey(void);
 		void unsetLimit(void);
-		void unsetOperator(const Client &client);
+		void unsetOperator(Client &client);
 	
 		bool addClient(Client &client);
 		void deleteClient(const std::string &nickname);
