@@ -214,12 +214,12 @@ void Server::run(void)
 {
 	std::cout << "Server is running..." << std::endl;
 	setStartTime();
-	fd = socket(AF_INET, SOCK_STREAM, 0);
+	fd = socket(AF_INET, SOCK_STREAM, 0); // (도매인)AF_INET:IPv4, (타입)SOCK_STREAM:TCP, (프로토콜)0:기본 
 	if (fd == -1)
 		throw std::runtime_error("socket error");
-	addr.sin_family = AF_INET; // ->IPv4
-	addr.sin_port = htons(port); // 2바이트의 포트번호
-	addr.sin_addr.s_addr = INADDR_ANY; // 4바이트의 IP주소(INADDR_ANY: 모든 IP로부터의 연결을 허용(htol으로 변환x))
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port); // 포트번호
+	addr.sin_addr.s_addr = INADDR_ANY; // IP주소(INADDR_ANY: 모든 IP로부터의 연결을 허용(htol으로 변환x))
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("socket:blocking error");
 	if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
@@ -423,3 +423,4 @@ void Server::send_system_message(Client cli, std::string msg)
 }
 
 //:siykim!siyoungkim@:ft_irc.de PRIVMSG #here :hi 
+>>>>>>> main
