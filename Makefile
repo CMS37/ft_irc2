@@ -1,4 +1,4 @@
-NAME		=	server
+NAME		=	ircserv
 
 CXX			= 	c++
 CXXFLAGS	= 	-Wall -Werror -Wextra -std=c++98

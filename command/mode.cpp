@@ -53,7 +53,6 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 				}
 				else if (!channel->is_invited(str[i]))
 				{
-					// code 441 "<nickname> <channel> :They aren't on that channel"
 					this->_server.send_message_to_client_with_code(_client, "441", str[i] + " " + str[0] + " :They aren't on that channel");
 					return ;
 				}
