@@ -105,7 +105,6 @@ void Channel::deleteClient(const std::string &nickname)
 	{
 		if ((*it)->getNickname() == nickname)
 		{
-			delete (*it);
 			invited.erase(it);
 			return ;
 		}
