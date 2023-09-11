@@ -89,7 +89,8 @@ bool Channel::addClient(Client &client)
 	client.getServer().send_message_to_channel(name, client.getNickname() + " has joined " + this->name + "\r\n");
 	if(!this->topic.empty())
 		client.getServer().send_message_to_client_with_code(client, "332", name + " :" + topic);
-
+	else
+		client.getServer().send_message_to_client_with_code(client, "332", name + " :There's no topic on this channel\r\n");
 	std::string userlist;
 	for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
 	{
