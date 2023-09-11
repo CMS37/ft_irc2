@@ -51,6 +51,7 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 			}
 		}
 	}
+	// this->server.send_message_to_fd(this->getFd(), );
 }
 
 void Client::deleteJoinedChannel(const std::string &name)

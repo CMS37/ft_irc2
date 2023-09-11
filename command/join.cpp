@@ -9,7 +9,6 @@ void Parser::cmd_join()
         return ;
     }
 
-    std::string channelName(this->_tokens[1]);
     if (this->_tokens.size() == 2) // /join #channel
         this->_client.joinChannel(this->_tokens[1], "");
     else if (this->_tokens.size() == 3) // /join #channel key
