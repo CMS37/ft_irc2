@@ -81,21 +81,26 @@ bool Channel::addClient(Client &client)
 			}
 		}
 	}
+	Client *new_client = new Client(client);
+	invited.push_back(new_client);
 
 	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
 	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN " + name + "\r\n");
 	client.getServer().send_message_to_channel(name, client.getNickname() + " has joined " + this->name + "\r\n");
 	if(!this->topic.empty())
 		client.getServer().send_message_to_client_with_code(client, "332", name + " :" + topic);
-	if (is_operator(client))
-		client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :@" + client.getNickname());
-	else
-		client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :" + client.getNickname());
+
+	std::string userlist;
+	for (std::vector<Client *>::iterator it = invited.begin(); it != invited.end(); ++it)
+	{
+		if (is_operator(**it))
+			userlist.append("@" + (*it)->getNickname() + " ");
+		else
+			userlist.append((*it)->getNickname() + " ");
+	}
+	client.getServer().send_message_to_client_with_code(client, "353", "= " + name + " :" + userlist);
 	client.getServer().send_message_to_client_with_code(client, "366", name + " :End of /NAMES list");
 
-
-	Client *new_client = new Client(client);
-	invited.push_back(new_client);
 	return (true);
 }
 
