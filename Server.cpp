@@ -423,4 +423,3 @@ void Server::send_system_message(Client cli, std::string msg)
 }
 
 //:siykim!siyoungkim@:ft_irc.de PRIVMSG #here :hi 
->>>>>>> main
