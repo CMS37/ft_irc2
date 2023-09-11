@@ -7,7 +7,6 @@ void Parser::cmd_privmsg()
         this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
         return;
     }
-
     std::string target_channel = this->_tokens[1];
     std::string message;
     for(unsigned int i = 2; i < this->_tokens.size(); i++)

@@ -1,8 +1,8 @@
 #include "../Parser.hpp"
+#include <stdio.h>
 
 void Parser::cmd_join()
 {
-
     if(!this->_client.getIsRegistered())
     {
         this->_server.send_message_to_client_with_code(this->_client, "451", ":You have not registered");
@@ -12,8 +12,6 @@ void Parser::cmd_join()
     if (this->_tokens.size() == 2) // /join #channel
         this->_client.joinChannel(this->_tokens[1], "");
     else if (this->_tokens.size() == 3) // /join #channel key
-        this->_client.joinChannel(this->_tokens[1], this->_tokens[2]);
-    else if (this->_tokens.size() == 4)
         this->_client.joinChannel(this->_tokens[1], this->_tokens[2]);
 }
 

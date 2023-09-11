@@ -13,7 +13,7 @@ std::vector<std::string> split(std::string input, char delimiter)
 
 bool contains(std::string &haystack, std::string const &needles)
 {
-	for (u_int32_t i = 0; i < needles.length(); i++)
+	for (size_t i = 0; i < needles.length(); i++)
 	{
 		if (haystack.find(needles[i]) != std::string::npos)
 			return (true);
@@ -29,4 +29,16 @@ std::string parse_pw(std::string pw)
             return pw.substr(0, i);
     }
     return pw;
+}
+
+bool isNum(const std::string &str)
+{
+    if (str.empty())
+        return false;
+    for (size_t i = 0; i < str.length(); i++)
+    {
+        if (!std::isdigit(str[i]))
+            return false;
+    }
+    return true;
 }

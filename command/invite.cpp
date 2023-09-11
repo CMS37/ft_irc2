@@ -8,17 +8,17 @@ void Parser::cmd_invite()
     Channel *channel = this->_server.getChannel(this->_tokens[2]);
     if (channel == NULL)
     {
-        this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[2] + ":No such channel");
+        this->_server.send_message_to_client_with_code(_client, "403", this->_tokens[2] + " :No such channel");
         return ;
     }
     if (client == NULL)
     {
-        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[1] + ":No such nick");
+        this->_server.send_message_to_client_with_code(_client, "401", this->_tokens[1] + " :No such nick");
         return ;
     }
     if (!channel->is_operator(this->_client))
     {
-        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[2] + ":You're not channel operator");
+        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[2] + " :You're not channel operator");
         return ;
     }
     if (channel->is_invited(client->getNickname()))
@@ -29,9 +29,11 @@ void Parser::cmd_invite()
 
     try
     {
+        std::vector<Client *> &inv = channel->getInvited();
+        inv.push_back(client);
         channel->addClient(*client);
         this->_server.send_message_to_client_with_code(*client, "341", this->_tokens[2] + " " + this->_tokens[1] + " :has been invited by " + this->_client.getNickname());
-        std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() +" INVITE " + this->_tokens[1] + ":" + this->_tokens[2] + "\r\n";
+        std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() +" INVITE " + this->_tokens[1] + " :" + this->_tokens[2] + "\r\n";
         this->_server.send_message_to_channel(channel->getName(), msg);
     }
     catch(const std::exception& e)

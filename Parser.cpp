@@ -25,7 +25,10 @@ Parser::Parser(Server& server, Client& client, std::string str) : _server(server
         this->_tokens.push_back(temp);
 }
 
-Parser::~Parser() {}
+Parser::~Parser()
+{
+
+}
 
 
 void Parser::what_is_this()
@@ -67,6 +70,8 @@ void Parser::what_is_this()
             cmd_invite();
         else if(this->_tokens[0] == "PART")
             cmd_part();
+        else if(this->_tokens[0] == "WHOIS")
+            cmd_whois();
     //     else if(this->_tokens[0] == "LIST")
     //         cmd_list();
     //     else if(this->_tokens[0] == "NAMES")

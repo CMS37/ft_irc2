@@ -40,6 +40,7 @@ class Client
 
 		void joinChannel(const std::string &name, const std::string &key);
 		void deleteJoinedChannel(const std::string &name);
+		void quitAll(void);
 
 
 		int getFd(void) const;

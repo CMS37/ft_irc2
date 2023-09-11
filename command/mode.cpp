@@ -6,7 +6,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 	if (channel == NULL)
 	{
 		// code 403 "<channel> :No such channel"
-		this->_server.send_message_to_client_with_code(_client, "403", str[0] + " : No such channel");
+		this->_server.send_message_to_client_with_code(_client, "403", str[0] + " :No such channel");
 		return ;
 	}
 	std::string ch = channel->getName();
@@ -19,13 +19,13 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 	{
 		std::cout << _client.getNickname() << std::endl;
 		// code 441 "<nickname> <channel> :They aren't on that channel"
-		this->_server.send_message_to_client_with_code(_client, "441", _client.getNickname() + " " + str[0] + " : They aren't on that channel");
+		this->_server.send_message_to_client_with_code(_client, "441", _client.getNickname() + " " + str[0] + " :They aren't on that channel");
 		return ;
 	}
 	else if (!channel->is_operator(_client))
 	{
 		// code 482 "<channel> :You're not channel operator"
-		this->_server.send_message_to_client_with_code(_client, "482", str[0] + " : You're not channel operator");
+		this->_server.send_message_to_client_with_code(_client, "482", str[0] + " :You're not channel operator");
 		return ;
 	}
 	std::vector<std::string> seting;
@@ -33,14 +33,10 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 	std::string set = str[1];
 	std::string::iterator it = set.begin() + 1;
 	size_t i = 2;
-	bool pos;
+	bool pos = set[0] == '+'; // true: +, false: -
 
-	if (set[0] == '+')
-		pos = true;
-	else if (set[0] == '-')
-		pos = false;
-	for (; it != set.end(); ++it)
-	{
+	for  ( ; it != set.end(); ++it)
+	{	
 		switch(*it)
 		{
 			case '+':
@@ -52,8 +48,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 			case 'o':
 				if (str.size() < i + 1)
 				{
-					// code 461 "<channel> :Not enough parameters"
-					this->_server.send_message_to_client_with_code(_client, "461", str[0] + " :Not enough parameters");
+					this->_server.send_message_to_client_with_code(_client, "461", "MODE :Not enough parameters (o)");
 					return ;
 				}
 				else if (!channel->is_invited(str[i]))
@@ -76,7 +71,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 						channel->unsetOperator(*client);
 					}
 				}
-				argv = str[i] + " ";
+				argv += str[i] + " ";
 				i++;
 				break;
 			case 'i':
@@ -94,25 +89,24 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 			case 'k':
 				if (str.size() < i + 1)
 				{
-					// code 461 "<channel> :Not enough parameters"
-					this->_server.send_message_to_client_with_code(_client, "461", str[0] + " :Not enough parameters");
+					this->_server.send_message_to_client_with_code(_client, "461", "MODE :Not enough parameters (k)");
 					return ;
 				}
 				else
 				{
 					if (pos)
 					{
-						seting.push_back("+k");
 						channel->setKey(str[i]);
+						seting.push_back("+k");
+						argv += str[i] + " ";
+						i++;
 					}
 					else
 					{
+						channel->unsetKey();
 						seting.push_back("-k");
-						channel->unsetKey(str[i]);
 					}
 				}
-				argv = str[i] + " ";
-				i++;
 				break;
 			case 't':
 				if (pos)
@@ -125,7 +119,6 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 					seting.push_back("-t");
 					channel->unsetTopic();
 				}
-				argv = str[i] + " ";
 				i++;
 				break;
 			case 'l':
@@ -138,14 +131,16 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 				{
 					if (str.size() < i + 1)
 					{
-						// code 461 "<channel> :Not enough parameters"
-						this->_server.send_message_to_client_with_code(_client, "461", str[0] + " :Not enough parameters");
+						this->_server.send_message_to_client_with_code(_client, "461", "MODE :Not enough parameters (+l)");
 						return ;
 					}
-					channel->setLimit(atoi(str[i].c_str()));
-					seting.push_back("+l");
-					argv = str[i] + " ";
-					i++;
+					else if (!isNum(str[1]))
+					{
+						channel->setLimit(atoi(str[i].c_str()));
+						seting.push_back("+l");
+						argv += str[i] + " ";
+						i++;
+					}
 				}
 				break;
 			case 'e':
@@ -201,17 +196,18 @@ void Parser::cmd_mode_user(const std::vector<std::string> &str)
 		this->_server.send_message_to_fd(_client.getFd(), msg);
 	}
 	else
-		this->_server.send_message_to_client_with_code(_client, "502", ":Cant change mode for other users");
+		this->_server.send_message_to_client_with_code(_client, "502", " :Cant change mode for other users");
 }
 
 void Parser::mode_list_channel(const std::vector<std::string> &str)
 {
 	std::string msg;
 	Channel *channel = _server.getChannel(str[0]);
+	msg.append(":");
 	msg.append(_server.getHostname());
 	msg.append(" MODE ");
 	msg.append(str[0]);
-	msg.append(":");
+	msg.append(" :");
 	std::vector<std::string> setModes = channel->getSetModes();
 	std::vector<std::string>::iterator it = setModes.begin();
 	for (; it != setModes.end(); ++it)
@@ -229,7 +225,6 @@ void Parser::cmd_mode(const std::string &mode)
 
 	if (mode.empty())
 	{
-		// code 461 "<command> :Not enough parameters"
 		this->_server.send_message_to_client_with_code(_client, "461", "MODE :Not enough parameters");
 		return ;
 	}
