@@ -415,3 +415,11 @@ void Server::send_message_to_channel_except_myself(int fd, std::string channel_n
 			send_message_to_fd(cli_fd, message);
 	}
 }
+
+void Server::send_system_message(Client cli, std::string msg)
+{
+	std::string message = ":" + this->hostname + "!" + this->hostname + "@:" + this->hostname + " PRIVMSG " + cli.getChannel()->getName() + " :" + msg + "\r\n";
+	send_message_to_fd(cli.getFd(), message);
+}
+
+//:siykim!siyoungkim@:ft_irc.de PRIVMSG #here :hi 

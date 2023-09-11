@@ -80,7 +80,8 @@ class Server
 		void send_message_to_channel_except_myself(int fd, std::string channel_name, std::string message);
 		void send_message_to_channel_with_code(std::string channel_name, const Client &cli, std::string code, std::string message);
 		void send_message_to_client_with_code(const Client &cli, std::string code, std::string message);
-
+		void send_system_message(Client cli, std::string msg);
+		
 		//server time
 		//send
 };
