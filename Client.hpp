@@ -29,7 +29,7 @@ class Client
 		std::string servername;
 		std::string realname;
 		std::string mode;
-		std::string message;
+		std::string message_buffer;
 
 		Client();
 	public:
@@ -52,6 +52,7 @@ class Client
 		std::string getHostname(void) const;
 		std::string getServername(void) const;
 		std::string getRealname(void) const;
+		std::string getMessageBuffer(void) const;
 		Channel* getChannel(void) const;
 
 		void setNickname(const std::string &nickname);
@@ -62,6 +63,7 @@ class Client
 		void setIsRegistered(bool is_registered);
 		void setIsPasswordAllowed(bool is_password_allowed);
 		void setChannel(Channel* channel);
+		void setMessageBuffer(const std::string &message_buffer);
 };
 
 #endif

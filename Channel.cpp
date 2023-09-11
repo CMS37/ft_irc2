@@ -81,8 +81,9 @@ bool Channel::addClient(Client &client)
 			}
 		}
 	}
-	Client *new_client = new Client(client);
-	invited.push_back(new_client);
+	// Client *new_client = new Client(client);
+	// invited.push_back(new_client);
+	invited.push_back(&client);
 
 	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
 	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN " + name + "\r\n");

@@ -134,6 +134,12 @@ void Client::setChannel(Channel* channel)
 	this->channel = channel;
 }
 
+void Client::setMessageBuffer(const std::string &message_buffer)
+{
+	this->message_buffer = message_buffer;
+}
+
+
 
 
 /*//////////////////////////////////////////////////////////////////////////////*/
@@ -190,6 +196,11 @@ bool Client::getIsRegistered(void) const
 Channel* Client::getChannel(void) const
 {
 	return (this->channel);
+}
+
+std::string Client::getMessageBuffer(void) const
+{
+	return (this->message_buffer);
 }
 
 
