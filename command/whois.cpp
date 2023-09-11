@@ -16,7 +16,7 @@ void	Parser::cmd_whois(void)
 		if (client != NULL)
 		{
 			std::string msg;
-			msg =client->getUsername() + " " + client->getHostname() + " * :" + client->getRealname();
+			msg =client->getNickname() + " " + client->getUsername() + " " + client->getServername() + " * :" + client->getRealname();
 			this->_server.send_message_to_client_with_code(_client, "311", msg);
                         time_t startTime = _server.getStartTime();
                         std::string time = std::string(ctime(&startTime));

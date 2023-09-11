@@ -118,6 +118,7 @@ void Server::client_disconnect(size_t i)
 void Server::read_client_data(size_t i)
 {
 	char buf[1024];
+	bzero(buf, sizeof(buf));
 	ssize_t bytes_read = recv(fds[i].fd, buf, sizeof(buf) - 1, 0);
 	buf[bytes_read] = '\0';
 
