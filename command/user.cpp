@@ -19,11 +19,6 @@ void Parser::cmd_user()
             realname.append(" ");
     }
     this->_client.setRealname(realname);
-    std::cout << "username [" << this->_tokens[1] << "]" << std::endl;
-    std::cout << "hostname [" << this->_tokens[2] << "]" << std::endl;
-    std::cout << "servername [" << this->_tokens[3] << "]" << std::endl;
-    std::cout << "realname [" << realname << "]" << std::endl;
-
     this->_server.registrate(this->_client);
 
     //이후 호스트네임 확인작업 하는듯, 만약 적절한 거 못 찾으면 ip 주소로 대체
