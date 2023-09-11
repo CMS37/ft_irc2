@@ -26,7 +26,7 @@ void Parser::cmd_part()
     // this->_client.deleteJoinedChannel(this->_tokens[1]);
     
     std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() + " PART " + this->_tokens[1] + "\r\n";
-    this->_server.send_message_to_fd(this->_client.getFd(), msg);
+    // this->_server.send_message_to_fd(this->_client.getFd(), msg);
     this->_server.send_message_to_channel(this->_tokens[1], msg);
     this->_server.send_message_to_client_with_code(this->_client, "442", this->_tokens[1] + " :Left channel");
 
