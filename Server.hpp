@@ -57,6 +57,7 @@ class Server
 		void	deleteChannel(const std::string &name);
 		void	setStartTime(void);
 		void	registrate(Client &cli);
+		std::vector<std::string>	parse_recieved(std::string &sbuf, Client &cli);
 
 		bool	check_nickname(const std::string &nickname);
 		bool	check_channel(const std::string &channel);

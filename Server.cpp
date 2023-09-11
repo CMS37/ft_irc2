@@ -115,6 +115,20 @@ void Server::client_disconnect(size_t i)
 	fds.erase(fds.begin() + i);
 }
 
+std::vector<std::string> Server::parse_recieved(std::string &sbuf, Client &cli)
+{
+	std::string str = cli.getMessageBuffer() + sbuf;
+	cli.setMessageBuffer("");
+	std::vector<std::string> lines = split(str, '\n');
+
+	if(sbuf.substr(sbuf.length() - 2, 2) != "\r\n")
+	{
+		cli.setMessageBuffer(lines.back());
+		lines.pop_back();
+	}
+	return (lines);
+}
+
 void Server::read_client_data(size_t i)
 {
 	char buf[1024];
@@ -132,9 +146,7 @@ void Server::read_client_data(size_t i)
 	else
 	{
 		std::string sbuf(buf);
-		while (sbuf.find("\r\n") != std::string::npos)
-			sbuf.replace(sbuf.find("\r\n"), 2, "\n");
-		std::vector<std::string> lines = split(sbuf, '\n');
+		std::vector<std::string> lines = parse_recieved(sbuf, *clients[fds[i].fd]);
 
 		std::cout << "================================\n";
 		std::cout << "     <Recvieced string>\n" << sbuf << std::endl;
@@ -146,8 +158,6 @@ void Server::read_client_data(size_t i)
 			Parser parser(*this , *clients[fds[i].fd], lines[j]);
 			parser.what_is_this();
 		}
-		// Parser parser(*this , *clients[fds[i].fd], sbuf);
-		// parser.what_is_this();
 	}
 }
 
