@@ -7,13 +7,22 @@ void Parser::cmd_user()
     
     this->_client.setUsername(this->_tokens[1]);
     this->_client.setHostname(this->_tokens[2]);
-    this->_client.setServername(this->_tokens[3]); //서버이름그냥 호스트네임으로?
-    this->_client.setRealname(this->_tokens[4]);
-
+    this->_client.setServername(this->_tokens[3]);
+    
+    std::string realname = this->_tokens[4].substr(1, this->_tokens[4].size() - 1);
+    if (_tokens.size() > 5)
+        realname.append(" ");
+    for (size_t i = 5; i < this->_tokens.size(); i++)
+    {
+        realname.append(this->_tokens[i]);
+        if (i < this->_tokens.size() - 1)
+            realname.append(" ");
+    }
+    this->_client.setRealname(realname);
     std::cout << "username [" << this->_tokens[1] << "]" << std::endl;
     std::cout << "hostname [" << this->_tokens[2] << "]" << std::endl;
     std::cout << "servername [" << this->_tokens[3] << "]" << std::endl;
-    std::cout << "realname [" << this->_tokens[4] << "]" << std::endl;
+    std::cout << "realname [" << realname << "]" << std::endl;
 
     this->_server.registrate(this->_client);
 
