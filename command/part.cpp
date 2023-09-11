@@ -22,8 +22,8 @@ void Parser::cmd_part()
         return ;
     }
     
-    channel->deleteClient(this->_client.getNickname());
-    this->_client.deleteJoinedChannel(this->_tokens[1]);
+    // channel->deleteClient(this->_client.getNickname());
+    // this->_client.deleteJoinedChannel(this->_tokens[1]);
     
     std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() + " PART " + this->_tokens[1] + "\r\n";
     this->_server.send_message_to_fd(this->_client.getFd(), msg);

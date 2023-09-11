@@ -135,7 +135,13 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 					}
 					else if (!isNum(str[1]))
 					{
-						channel->setLimit(atoi(str[i].c_str()));
+						int limit_num = atoi(str[i].c_str());
+						if (limit_num < 1)
+						{
+							this->_server.send_message_to_client_with_code(_client, "461", "MODE :Invalid number (+l)");
+							return ;
+						}
+						channel->setLimit(limit_num);
 						seting.push_back("+l");
 						argv += str[i] + " ";
 						i++;
