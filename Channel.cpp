@@ -2,8 +2,11 @@
 
 Channel::Channel(const std::string &name) : name(name)
 {
+	if (name[0] == '+')
+		invite_only = true;
+	else
+		invite_only = false;
 	use_key = false;
-	invite_only = false;
 	topic_set = false;
 	limit_set = false;
 	topic = "";
@@ -15,7 +18,11 @@ Channel::Channel(const std::string &name, const std::string &key) : name(name), 
 		use_key = true;
 	else
 		use_key  = false;
-	invite_only = false;
+	if (name[0] == '+')
+		invite_only = true;
+	else
+		invite_only = false;
+
 	topic_set = false;
 	limit_set = false;
 	topic = "";
@@ -79,7 +86,7 @@ bool Channel::addClient(Client &client)
 
 	// client.getServer().send_message_to_fd(client.getFd(), ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN :" + name + "\r\n");
 	client.getServer().send_message_to_channel(this->getName() , ":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServer().getHostname() + " JOIN " + name + "\r\n");
-	client.getServer().send_message_to_channel(name, client.getNickname() + " has joined " + this->name + "\r\n");
+	// client.getServer().send_message_to_channel(name, client.getNickname() + " has joined " + this->name + "\r\n");
 	if(!this->topic.empty())
 		client.getServer().send_message_to_client_with_code(client, "332", name + " :" + topic);
 	else

@@ -25,7 +25,7 @@ void	Parser::cmd_whois(void)
 		}
 		else
 			this->_server.send_message_to_client_with_code(_client, "401", nick[i] + " :No such nick");
-		this->_server.send_message_to_client_with_code(_client, "318", nick[i] + " :End of /WHOIS list");
+                this->_server.send_message_to_client_with_code(_client, "318", nick[i] + " :End of /WHOIS list");
 	}
 }
 

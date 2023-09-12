@@ -24,6 +24,7 @@ SRCS =	main.cpp \
 		command/time.cpp \
 		command/topic.cpp \
 		command/user.cpp \
+		command/who.cpp \
 		command/whois.cpp \
 
 OBJS := ${SRCS:%.cpp=${OBJS_DIR}/%.o}

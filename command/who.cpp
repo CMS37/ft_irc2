@@ -1,3 +1,40 @@
+#include "../Parser.hpp"
+
+void Parser::cmd_who(void)
+{
+	if (_tokens.size() < 2)
+	{
+		this->_server.send_message_to_client_with_code(_client, "461", "WHO :Not enough parameters");
+		return ;
+	}
+
+	Channel *channel = this->_server.getChannel(_tokens[1]);
+	if (channel == NULL)
+	{
+		this->_server.send_message_to_client_with_code(_client, "403", _tokens[1] + " :No such channel");
+		return ;
+	}
+
+	std::string msg;
+	msg.append(":" +  _server.getHostname() + " 352 " + _client.getNickname() + " " + _tokens[1]);
+
+	std::vector<Client *> clients = channel->getInvited();
+	for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		std::string msg2;
+		msg2.append(msg + " " + (*it)->getUsername() + " * :" + _server.getHostname() + " " + (*it)->getNickname() + " :0 " + (*it)->getRealname() + "\r\n");
+		this->_server.send_message_to_fd(_client.getFd(), msg2);
+	}
+	_server.send_message_to_client_with_code(_client, "315", "* :End of /WHO list");
+}
+
+// Command is: |WHO|[ #here ]
+// Response to send is
+// |:ft_irc.de 352 siykim #here min-cho * :ft_irc.de  min :0 Min-soo Cho
+// :ft_irc.de 352 siykim #here siykim * :ft_irc.de  siykim :0 Siyoung Kim
+// :ft_irc.de 315 siykim * :End of /WHO list
+
+
 // 4.5.1 Who query
 
 //       Command: WHO

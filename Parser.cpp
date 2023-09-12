@@ -70,6 +70,8 @@ void Parser::what_is_this()
             cmd_invite();
         else if(this->_tokens[0] == "PART")
             cmd_part();
+        else if(this->_tokens[0] == "WHO")
+            cmd_who();
         else if(this->_tokens[0] == "WHOIS")
             cmd_whois();
     //     else if(this->_tokens[0] == "LIST")
