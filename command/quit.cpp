@@ -4,7 +4,7 @@ void Parser::cmd_quit()
 {
     std::string msg;
     msg.append(":" + _client.getNickname() + "!" + _client.getUsername() + "@" + _client.getHostname() + " QUIT :\r\n");
-    _client.getServer().send_message_to_fd(_client.getFd(), msg);
+    _server.send_message_to_fd(_client.getFd(), msg);
     _client.quitAll();
 }
 

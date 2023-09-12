@@ -29,7 +29,6 @@ void Parser::cmd_topic()
     else
     {
         this->_server.send_message_to_channel(chan_name, ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " TOPIC " + chan_name + " :" + topic + "\r\n");
-        // this->_server.send_message_to_fd(this->_client.getFd(), ":" + this->_client.getNickname() + "!" + this->_client.getHostname() + "@" + this->_server.getHostname() + " TOPIC " + chan_name + " :" + topic + "\r\n");
     }
 }
 
