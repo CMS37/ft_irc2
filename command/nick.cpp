@@ -5,14 +5,26 @@ void Parser::cmd_nick()
     std::string nickname(this->_tokens[1]);
 
     if (this ->_tokens.size() != 2)
-		this->_server.send_message_to_client_with_code(this->_client, "461", "NICK :wrong number of arguments");
+		this->_server.send_message_to_client_with_code(this->_client, "431", "NICK :No nickname given");
 	else if (contains(nickname, ":/\0"))
 		this->_server.send_message_to_client_with_code(this->_client, "432", nickname + " :Erroneus nickname");
 	else if (this->_server.check_nickname(nickname))
 		this->_server.send_message_to_client_with_code(this->_client, "433", nickname + " :Nickname is already in use");
 	else
     {
-        this->_client.setNickname(nickname);
+		std::string msg;
+		if (this->_client.getNickname().empty())
+		{
+			this->_client.setNickname(nickname);
+			msg.append(":" +nickname + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " ");
+		}
+		else
+		{
+			msg.append(":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " ");
+			this->_client.setNickname(nickname);
+		}
+		msg.append("NICK " + this->_client.getNickname() + "\r\n");
+		this->_server.send_message_to_fd(this->_client.getFd(), msg);
 		this->_server.registrate(this->_client);
     }
 }

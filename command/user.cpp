@@ -6,8 +6,8 @@ void Parser::cmd_user()
         this->_server.send_message_to_client_with_code(this->_client, "461", "USER :Not enough parameters");
     
     this->_client.setUsername(this->_tokens[1]);
-    this->_client.setHostname(this->_tokens[2]);
-    this->_client.setServername(this->_tokens[3]);
+    this->_client.setHostname("IP.hosted-by-42");
+    this->_client.setServername("irc.42.kr");
     
     std::string realname = this->_tokens[4].substr(1, this->_tokens[4].size() - 1);
     if (_tokens.size() > 5)
