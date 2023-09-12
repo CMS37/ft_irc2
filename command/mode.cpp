@@ -185,7 +185,7 @@ void Parser::cmd_mode_channel(const std::vector<std::string> &str)
 	std::cout << "seting: " << tmp << std::endl;
 	std::cout << "argv: " << argv << std::endl;
 	std::cout << "==============================" << std::endl;
-	this->_server.send_message_to_channel(channel->getName(), ":" + _client.getNickname() + " MODE " + channel->getName() + " :" + tmp + argv + "\r\n");
+	this->_server.send_message_to_channel(channel->getName(), ":" + _client.getNickname() + "!" + _client.getUsername() + "@" + _client.getHostname() +" MODE " + channel->getName() + " :" + tmp + argv + "\r\n");
 }
 
 void Parser::cmd_mode_user(const std::vector<std::string> &str)

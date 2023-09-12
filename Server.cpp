@@ -267,8 +267,9 @@ void	Server::registrate(Client &cli)
 	&& !cli.getIsRegistered())
 	{
 		cli.setIsRegistered(true);
-		std::string msg = ":Welcome to the " + hostname + " Network " + cli.getNickname() + "!";
-		send_message_to_client_with_code(cli, "001", msg);
+		send_message_to_client_with_code(cli, "001", ":Welcome to the Internet Relay Network " + cli.getNickname() + "!" + cli.getUsername() + "@" + cli.getHostname());
+		send_message_to_client_with_code(cli, "002", ":Your host is " + this->hostname + ", running version 1.0");
+		send_message_to_client_with_code(cli, "003", ":This server was created sometime");
 	}
 }
 
