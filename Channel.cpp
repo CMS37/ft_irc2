@@ -2,8 +2,11 @@
 
 Channel::Channel(const std::string &name) : name(name)
 {
+	if (name[0] == '+')
+		invite_only = true;
+	else
+		invite_only = false;
 	use_key = false;
-	invite_only = false;
 	topic_set = false;
 	limit_set = false;
 	topic = "";
@@ -15,7 +18,11 @@ Channel::Channel(const std::string &name, const std::string &key) : name(name), 
 		use_key = true;
 	else
 		use_key  = false;
-	invite_only = false;
+	if (name[0] == '+')
+		invite_only = true;
+	else
+		invite_only = false;
+
 	topic_set = false;
 	limit_set = false;
 	topic = "";
