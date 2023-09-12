@@ -17,7 +17,7 @@ void Parser::cmd_privmsg()
     }
 
     this->_server.send_message_to_channel_except_myself(this->_client.getFd(), target_channel, 
-    ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() + " PRIVMSG " + target_channel + " " + message + "\r\n");
+    ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " PRIVMSG " + target_channel + " " + message + "\r\n");
 
     // this->_server.send_system_message(this->_client, message);
 

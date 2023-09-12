@@ -197,7 +197,7 @@ void Parser::cmd_mode_user(const std::vector<std::string> &str)
 		// 	// _client->setHostname(); 서버시작할때 ip유무 물어보기
 		// else if (str[1] == "-i")
 		// 	// _client->setHostname(); 
-		msg.append(":" + _client.getNickname() + "!" + _client.getUsername() + "@" + _client.getServername() + " MODE " + _client.getNickname() + " " + str[1] + "\r\n");
+		msg.append(":" + _client.getNickname() + "!" + _client.getUsername() + "@" + _client.getHostname() + " MODE " + _client.getNickname() + " " + str[1] + "\r\n");
 		this->_server.send_message_to_fd(_client.getFd(), msg);
 	}
 	else

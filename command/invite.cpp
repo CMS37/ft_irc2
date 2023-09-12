@@ -32,7 +32,7 @@ void Parser::cmd_invite()
         std::vector<Client *> &inv = channel->getInvited();
 	    inv.push_back(client);
         this->_server.send_message_to_client_with_code(*client, "341", this->_tokens[2] + " " + this->_tokens[1] + " :has been invited by " + this->_client.getNickname());
-        std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_server.getHostname() +" INVITE " + this->_tokens[1] + " :" + this->_tokens[2] + "\r\n";
+        std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() +" INVITE " + this->_tokens[1] + " :" + this->_tokens[2] + "\r\n";
         this->_server.send_message_to_channel(channel->getName(), msg);
     }
     catch(const std::exception& e)
