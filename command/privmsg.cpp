@@ -16,6 +16,13 @@ void Parser::cmd_privmsg()
             message += " ";
     }
 
+    Client* target_client = this->_server.getClient(target_channel);
+    if(target_client)
+    {
+        this->_server.send_message_to_fd(target_client->getFd(), ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " PRIVMSG " + target_channel + " " + message + "\r\n");
+        return;
+    }
+
     this->_server.send_message_to_channel_except_myself(this->_client.getFd(), target_channel, 
     ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " PRIVMSG " + target_channel + " " + message + "\r\n");
 
