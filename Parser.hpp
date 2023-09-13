@@ -30,7 +30,6 @@ class Parser
         ~Parser();
 
         void what_is_this();
-        // std::vector<std::string> split(std::string input, char delimiter);
         void setString(std::string str);
 
         void cmd_cap();

@@ -15,7 +15,6 @@ class Client
 	private:
 		int fd;
 		Server &server;
-		std::vector<Channel *> joined_channels;
 		Channel* channel;
 
 		// std::vector<char> modes;
@@ -39,9 +38,6 @@ class Client
 		Client &operator=(const Client &f);
 
 		void joinChannel(const std::string &name, const std::string &key);
-		void deleteJoinedChannel(const std::string &name);
-		void quitAll(void);
-
 
 		int getFd(void) const;
 		Server &getServer(void) const;

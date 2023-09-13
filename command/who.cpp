@@ -28,13 +28,6 @@ void Parser::cmd_who(void)
 	_server.send_message_to_client_with_code(_client, "315", "* :End of /WHO list");
 }
 
-// Command is: |WHO|[ #here ]
-// Response to send is
-// |:ft_irc.de 352 siykim #here min-cho * :ft_irc.de  min :0 Min-soo Cho
-// :ft_irc.de 352 siykim #here siykim * :ft_irc.de  siykim :0 Siyoung Kim
-// :ft_irc.de 315 siykim * :End of /WHO list
-
-
 // 4.5.1 Who query
 
 //       Command: WHO
