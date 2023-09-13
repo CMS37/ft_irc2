@@ -355,6 +355,16 @@ Channel *Server::getChannel(const std::string &name)
 	return (NULL);
 }
 
+Channel &Server::getChannelset(const std::string &name)
+{
+	for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
+	{
+		if (it->first == name)
+			return (*it->second);
+	}
+	return (*channels.begin()->second);
+}
+
 Client *Server::getClient(const std::string &nickname)
 {
 	for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)

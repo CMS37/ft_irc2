@@ -10,6 +10,7 @@ Channel::Channel(const std::string &name) : name(name)
 	topic_set = false;
 	limit_set = false;
 	topic = "";
+	bot_set = false;
 }
 
 Channel::Channel(const std::string &name, const std::string &key) : name(name), key(key)
@@ -150,6 +151,11 @@ bool Channel::is_invited(const std::string &nickname)
 	return (false);
 }
 
+bool Channel::is_bot(void)
+{
+	return (bot_set);
+}
+
 /*//////////////////////////////////////////////////////////////////////////////*/
 /*//                                                                          //*/
 /*//                                SETTER                                    //*/
@@ -192,6 +198,13 @@ void Channel::setOperator(Client &client)
 	op.push_back(&client);
 }
 
+void Channel::setBot(void)
+{
+	this->bot = new Bot();
+	bot_set = true;
+}
+
+
 void Channel::unsetOperator(Client &client)
 {
 	for (std::vector<Client *>::iterator it = op.begin(); it != op.end(); ++it)
@@ -220,6 +233,12 @@ void Channel::unsetLimit(void)
 {
 	this->limit = 0;
 	limit_set = false;
+}
+
+void Channel::unsetBot(void)
+{
+	delete this->bot;
+	bot_set = false;
 }
 
 /*//////////////////////////////////////////////////////////////////////////////*/
@@ -271,4 +290,9 @@ std::vector<Client *> &Channel::getInvited(void)
 std::vector<std::string> &Channel::getSetModes(void)
 {
 	return (setmodes);
+}
+
+Bot *Channel::getBot(void)
+{
+	return (this->bot);
 }

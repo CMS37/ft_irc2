@@ -9,20 +9,70 @@ void Parser::cmd_privmsg()
     }
     std::string target_channel = this->_tokens[1];
     std::string message;
+    Channel &channel = this->_server.getChannelset(target_channel);
+
     for(unsigned int i = 2; i < this->_tokens.size(); i++)
     {
-        message += this->_tokens[i];
+        if (channel.is_bot())
+        {
+            if (this->_tokens[2] == ":!ban" && i != 2)
+            {
+                std::cout << "check" << std::endl;
+                channel.getBot()->addban(this->_tokens[i]);
+                std::string msg = ":bot!bot@bot PRIVMSG " + target_channel + " :Ban " + this->_tokens[i] + "\r\n";
+                this->_server.send_message_to_channel(target_channel, msg);
+            }
+            else if (!channel.getBot()->checkmessage(this->_tokens[i]))
+            {
+                message += "*";
+                for (unsigned int j = 0; j < this->_tokens[i].size(); j++)
+                    message += "*";
+                message += "*";
+            }
+            else
+                message += this->_tokens[i];
+        }
+        else
+            message += this->_tokens[i];
         if(i < this->_tokens.size() - 1)
             message += " ";
     }
-
+    std::cout << "Check point 4" << std::endl;
     this->_server.send_message_to_channel_except_myself(this->_client.getFd(), target_channel, 
     ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " PRIVMSG " + target_channel + " " + message + "\r\n");
 
-    // this->_server.send_system_message(this->_client, message);
-
-        //|PRIVMSG|[ #here hi ]
-        //:siykim!siyoungkim@:ft_irc.de PRIVMSG #here :hi 
+    if (message == ":!bot create")
+    {
+        if (channel.is_operator(this->_client) == false)
+        {
+            this->_server.send_message_to_fd(this->_client.getFd(), "481 :Permission Denied- You're not an IRC operator\r\n");
+            return;
+        }
+        if (channel.is_bot())
+        {
+            this->_server.send_message_to_fd(this->_client.getFd(), "403 :Bot already exists\r\n");
+            return;
+        }
+        channel.setBot();
+        std::string msg = ":bot!bot@bot PRIVMSG " + target_channel + " :Ban bot created\r\n";
+        this->_server.send_message_to_channel(target_channel, msg);
+    }
+    else if (message == ":!bot destroy")
+    {
+        if (channel.is_operator(this->_client) == false)
+        {
+            this->_server.send_message_to_fd(this->_client.getFd(), "481 :Permission Denied- You're not an IRC operator\r\n");
+            return;
+        }
+        if (channel.is_bot() == false)
+        {
+            this->_server.send_message_to_fd(this->_client.getFd(), "403 :Bot does not exist\r\n");
+            return;
+        }
+        channel.unsetBot();
+        std::string msg = ":bot!bot@bot PRIVMSG " + target_channel + " :Ban bot destroyed\r\n";
+        this->_server.send_message_to_channel(target_channel, msg);
+    }
 }
 
 // 3.3.1 Private messages
