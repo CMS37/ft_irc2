@@ -20,7 +20,6 @@ Client &Client::operator=(const Client &f)
 	{
 		this->fd = f.fd;
 		this->server = f.server;
-		this->joined_channels = f.joined_channels;
 		this->channel = f.channel;
 		this->is_registered = f.is_registered;
 		this->is_password_allowed = f.is_password_allowed;
@@ -45,7 +44,6 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 		channel->setOperator(*this);
 		channel->addClient(*this);
 		channels.insert(std::pair<std::string, Channel *>(name, channel));
-		joined_channels.push_back(channel);
 	}
 	else
 	{
@@ -53,39 +51,10 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 		if (channel->getUseKey() && !channel->checkKey(key))
 			this->server.send_message_to_client_with_code(*this, "475", name + " :Cannot join channel (+k)");
 		else
-		{
-			if (channel->addClient(*this))
-			{
-				std::vector<Channel *>::iterator it = std::find(joined_channels.begin(), joined_channels.end(), channel);
-				if (it == joined_channels.end())
-					joined_channels.push_back(channel);
-			}
-		}
+			channel->addClient(*this);
+
 	}
 	// this->server.send_message_to_fd(this->getFd(), );
-}
-
-void Client::deleteJoinedChannel(const std::string &name)
-{
-	std::vector<Channel *>::iterator it;
-	for (it = joined_channels.begin(); it != joined_channels.end(); it++)
-	{
-		if ((*it)->getName() == name)
-		{
-			joined_channels.erase(it);
-			break;
-		}
-	}
-}
-
-
-void Client::quitAll(void)
-{
-	std::vector<Channel *>::iterator it;
-	for (it = joined_channels.begin(); it != joined_channels.end(); it++)
-	{
-		(*it)->deleteClient(this->nickname);
-	}
 }
 
 /*//////////////////////////////////////////////////////////////////////////////*/

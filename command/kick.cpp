@@ -26,11 +26,14 @@ void Parser::cmd_kick()
         this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[1] + " :You're not channel operator");
         return ;
     }
-    std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() +" KICK " + this->_tokens[1] + " " + this->_tokens[2] + " :kick by " + _client.getNickname() + "\r\n";
+    if (client->getNickname() == this->_client.getNickname())
+    {
+        this->_server.send_message_to_client_with_code(_client, "482", this->_tokens[1] + " :You can't kick yourself");
+        return ;
+    }
+    std::string msg = ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() +" KICK " + this->_tokens[1] + " " + this->_tokens[2] + " " + this->_tokens[3]+ "\r\n";
     this->_server.send_message_to_channel(this->_tokens[1], msg);
-    this->_server.send_message_to_fd(client->getFd(), msg);
     channel->deleteClient(client->getNickname());
-    client->deleteJoinedChannel(channel->getName());
 }
 
 // 3.2.8 Kick command
