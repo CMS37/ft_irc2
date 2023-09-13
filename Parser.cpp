@@ -108,7 +108,7 @@ void Parser::cmd_cap()
 {
     if(this->_tokens[1] == "LS")
     {
-        this->_server.send_message_to_fd(this->_client.getFd(), "CAP * LS :End of CAP LS negotiation\n");
+        this->_server.send_message_to_fd(this->_client.getFd(), ":!@" + this->_server.getHostname() + " CAP * LS :End of CAP LS negotiation\n");
     }
     // else if (this->_tokens[1] == "END")
     // {

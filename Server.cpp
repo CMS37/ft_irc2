@@ -373,7 +373,7 @@ Client *Server::getClient(const std::string &nickname)
 
 void Server::send_message_to_fd(int fd, std::string message)
 {
-	std::cout << ">>>message_sent_to_fd: " << message << std::endl;
+	std::cout << ">>>message_sent_to_fd\n" << message << std::endl;
 	send(fd, message.c_str(), message.length(), 0);
 }
 
@@ -396,7 +396,7 @@ void Server::send_message_to_channel_with_code(std::string channel_name, const C
 
 void Server::send_message_to_channel(std::string channel_name, std::string message)
 {
-	std::cout << "@@@@message_sent_to_channel: " << message << std::endl;
+	std::cout << "@@@@message_sent_to_channel->\n" << std::endl;
 	std::map<std::string, Channel *>::iterator cha_it = this->channels.find(channel_name);
 	
 	if (cha_it == this->channels.end())
@@ -412,7 +412,7 @@ void Server::send_message_to_channel(std::string channel_name, std::string messa
 
 void Server::send_message_to_channel_except_myself(int fd, std::string channel_name, std::string message)
 {
-	std::cout << "@@@@message_sent_to_channel: " << message << std::endl;
+	std::cout << "@@@@message_sent_to_channel_except_myself->\n" << std::endl;
 	std::map<std::string, Channel *>::iterator cha_it = this->channels.find(channel_name);
 	
 	if (cha_it == this->channels.end())
