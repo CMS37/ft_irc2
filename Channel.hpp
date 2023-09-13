@@ -3,6 +3,7 @@
 
 # include "Server.hpp"
 # include "Parser.hpp"
+# include "Bot.hpp"
 # include <iostream>
 # include <vector>
 # include <exception>
@@ -10,10 +11,13 @@
 class Server;
 class Client;
 class Parser;
+class Bot;
+
 
 class Channel
 {
 	private:
+		Bot *bot;
 		std::vector<Client *> op;
 		std::vector<Client *> invited;
 		std::string name;
@@ -26,6 +30,7 @@ class Channel
 		bool use_key;
 		bool topic_set;
 		bool limit_set;
+		bool bot_set;
 
 		Channel();
 		Channel(const Channel &f);
@@ -45,17 +50,20 @@ class Channel
 		bool getUseKey(void) const;
 		std::vector<Client *> &getInvited(void);
 		std::vector<std::string> &getSetModes(void);
+		Bot *getBot(void);
 
 		void setOperator(Client &client);
 		void setTopic(const std::string &topic);
 		void setInviteOnly(bool value);
 		void setKey(const std::string &key);
 		void setLimit(size_t limit);
+		void setBot(void);
 
 		void unsetTopic(void);
 		void unsetKey(void);
 		void unsetLimit(void);
 		void unsetOperator(Client &client);
+		void unsetBot(void);
 	
 		bool addClient(Client &client);
 		void deleteClient(const std::string &nickname);
@@ -64,6 +72,7 @@ class Channel
 		bool checkKey(const std::string &key);
 		bool is_operator(const Client &client);
 		bool is_invited(const std::string &nickname);
+		bool is_bot();
 };
 
 #endif

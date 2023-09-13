@@ -5,6 +5,7 @@
 # include <vector>
 # include"Client.hpp"
 # include"utils.hpp"
+# include"Bot.hpp"
 # include <ctime>
 # include <time.h>
 # include <string>
@@ -13,6 +14,7 @@
 
 class Server;
 class Client;
+class Bot;
 
 
 class Parser
@@ -55,8 +57,7 @@ class Parser
         void cmd_exit();
         void cmd_pass();
         void cmd_who();
-        void cmd_whois();   
-
+        void cmd_whois();
 };
 
 
