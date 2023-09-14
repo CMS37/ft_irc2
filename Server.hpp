@@ -77,13 +77,14 @@ class Server
 		Channel &getChannelset(const std::string &name);
 		std::string getHostname(void) const;
 
-		void send_message_to_fd(int fd, std::string message);
+		void send_message_to_fd_buffer(Client &cli, std::string message);
 		void send_message_to_channel(std::string channel, std::string message);
-		void send_message_to_channel_except_myself(int fd, std::string channel_name, std::string message);
+		void send_message_to_channel_except_myself(Client &cli, std::string channel_name, std::string message);
 		void send_message_to_channel_with_code(std::string channel_name, const Client &cli, std::string code, std::string message);
-		void send_message_to_client_with_code(const Client &cli, std::string code, std::string message);
+		void send_message_to_client_with_code(Client &cli, std::string code, std::string message);
 		void send_system_message(Client cli, std::string msg);
 		
+		void send_message(int fd);
 		//server time
 		//send
 };

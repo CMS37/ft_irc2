@@ -4,7 +4,7 @@ void Parser::cmd_privmsg()
 {
     if(!this->_client.getIsRegistered())
     {
-        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
+        this->_server.send_message_to_fd_buffer(this->_client, "451 :You have not registered\n");
         return;
     }
     std::string target_channel = this->_tokens[1];
@@ -41,23 +41,23 @@ void Parser::cmd_privmsg()
     Client* target_client = this->_server.getClient(target_channel);
     if(target_client)
     {
-        this->_server.send_message_to_fd(target_client->getFd(), ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " PRIVMSG " + target_channel + " " + message + "\r\n");
+        this->_server.send_message_to_fd_buffer(*target_client, ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " PRIVMSG " + target_channel + " " + message + "\r\n");
         return;
     }
 
-    this->_server.send_message_to_channel_except_myself(this->_client.getFd(), target_channel, 
+    this->_server.send_message_to_channel_except_myself(this->_client, target_channel, 
     ":" + this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname() + " PRIVMSG " + target_channel + " " + message + "\r\n");
 
     if (message == ":!bot create")
     {
         if (channel.is_operator(this->_client) == false)
         {
-            this->_server.send_message_to_fd(this->_client.getFd(), "481 :Permission Denied- You're not an IRC operator\r\n");
+            this->_server.send_message_to_fd_buffer(this->_client, "481 :Permission Denied- You're not an IRC operator\r\n");
             return;
         }
         if (channel.is_bot())
         {
-            this->_server.send_message_to_fd(this->_client.getFd(), "403 :Bot already exists\r\n");
+            this->_server.send_message_to_fd_buffer(this->_client, "403 :Bot already exists\r\n");
             return;
         }
         channel.setBot();
@@ -68,12 +68,12 @@ void Parser::cmd_privmsg()
     {
         if (channel.is_operator(this->_client) == false)
         {
-            this->_server.send_message_to_fd(this->_client.getFd(), "481 :Permission Denied- You're not an IRC operator\r\n");
+            this->_server.send_message_to_fd_buffer(this->_client, "481 :Permission Denied- You're not an IRC operator\r\n");
             return;
         }
         if (channel.is_bot() == false)
         {
-            this->_server.send_message_to_fd(this->_client.getFd(), "403 :Bot does not exist\r\n");
+            this->_server.send_message_to_fd_buffer(this->_client, "403 :Bot does not exist\r\n");
             return;
         }
         channel.unsetBot();

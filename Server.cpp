@@ -251,8 +251,14 @@ void Server::run(void)
 			{
 				if (fds[i].fd == this->fd) // 새로운 클라이언트 접속 요청
 					accept_client();
-				else //기존 클라이언트 이벤트 발생
+				else //기존 클라이언트 이벤트 발생ㅓ
 					read_client_data(i);
+			}
+			
+			if(fds[i].revents & POLLOUT)
+			{
+				std::cout << "POLLOUT\n";
+				send_message(fds[i].fd);
 			}
 		}
 	}
@@ -381,13 +387,16 @@ Client *Server::getClient(const std::string &nickname)
 /*//                                                                          //*/
 /*//////////////////////////////////////////////////////////////////////////////*/
 
-void Server::send_message_to_fd(int fd, std::string message)
+void Server::send_message_to_fd_buffer(Client &cli, std::string message)
 {
 	std::cout << ">>>message_sent_to_fd\n" << message << std::endl;
-	send(fd, message.c_str(), message.length(), 0);
+	// send(fd, message.c_str(), message.length(), 0);
+	
+	cli.append_send_buffer(message);
+	this->fds[cli.getFd()].events |= POLLOUT;
 }
 
-void Server::send_message_to_client_with_code(const Client &cli, std::string code, std::string message)
+void Server::send_message_to_client_with_code(Client &cli, std::string code, std::string message)
 {
 	std::string nick;
 	if (cli.getNickname() == "")
@@ -395,7 +404,7 @@ void Server::send_message_to_client_with_code(const Client &cli, std::string cod
 	else
 		nick = cli.getNickname();
 	std::string msg = ":" + hostname + " " + code + " " + nick + " " + message + "\r\n";
-	send_message_to_fd(cli.getFd(), msg);
+	send_message_to_fd_buffer(cli, msg);
 }
 
 void Server::send_message_to_channel_with_code(std::string channel_name, const Client &cli, std::string code, std::string message)
@@ -416,11 +425,11 @@ void Server::send_message_to_channel(std::string channel_name, std::string messa
 	std::vector<Client *> invited = cha_it->second->getInvited();
 	for(std::vector<Client *> ::iterator cli_it = invited.begin(); cli_it != invited.end(); cli_it++)
 	{
-		send_message_to_fd((*cli_it)->getFd(), message);
+		send_message_to_fd_buffer((**cli_it), message);
 	}
 }
 
-void Server::send_message_to_channel_except_myself(int fd, std::string channel_name, std::string message)
+void Server::send_message_to_channel_except_myself(Client &cli, std::string channel_name, std::string message)
 {
 	std::cout << "@@@@message_sent_to_channel_except_myself->\n" << std::endl;
 	std::map<std::string, Channel *>::iterator cha_it = this->channels.find(channel_name);
@@ -430,18 +439,26 @@ void Server::send_message_to_channel_except_myself(int fd, std::string channel_n
 		return ;
 	}
 	std::vector<Client *> invited = cha_it->second->getInvited();
-	for(std::vector<Client *> ::iterator cli_it = invited.begin(); cli_it != invited.end(); cli_it++)
+	for(std::vector<Client *>::iterator cli_it = invited.begin(); cli_it != invited.end(); cli_it++)
 	{
-		int cli_fd = (*cli_it)->getFd();
-		if(cli_fd != fd)
-			send_message_to_fd(cli_fd, message);
+		if((*cli_it)->getFd() != cli.getFd())
+			send_message_to_fd_buffer(**cli_it, message);
 	}
 }
 
 void Server::send_system_message(Client cli, std::string msg)
 {
 	std::string message = ":" + this->hostname + "!" + this->hostname + "@:" + this->hostname + " PRIVMSG " + cli.getChannel()->getName() + " :" + msg + "\r\n";
-	send_message_to_fd(cli.getFd(), message);
+	send_message_to_fd_buffer(cli, message);
 }
 
-//:siykim!siyoungkim@:ft_irc.de PRIVMSG #here :hi 
+void Server::send_message(int fd)
+{
+	Client *cli = this->clients[fd];
+
+	std::string message = cli->get_send_buffer_and_flush();
+	if(message.empty())
+		return;
+	send(fd, message.c_str(), message.length(), 0);
+	this->fds[fd].events &= ~POLLOUT;
+}

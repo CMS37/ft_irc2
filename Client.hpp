@@ -28,7 +28,8 @@ class Client
 		std::string servername;
 		std::string realname;
 		std::string mode;
-		std::string message_buffer;
+		std::string recv_buffer;
+		std::string send_buffer;
 
 		Client();
 	public:
@@ -38,6 +39,9 @@ class Client
 		Client &operator=(const Client &f);
 
 		void joinChannel(const std::string &name, const std::string &key);
+
+		void append_send_buffer(const std::string &str);
+		std::string get_send_buffer_and_flush(void);
 
 		int getFd(void) const;
 		Server &getServer(void) const;

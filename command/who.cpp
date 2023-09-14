@@ -23,7 +23,7 @@ void Parser::cmd_who(void)
 	{
 		std::string msg2;
 		msg2.append(msg + " " + (*it)->getUsername() + " * :" + _server.getHostname() + " " + (*it)->getNickname() + " :0 " + (*it)->getRealname() + "\r\n");
-		this->_server.send_message_to_fd(_client.getFd(), msg2);
+		this->_server.send_message_to_fd_buffer(_client, msg2);
 	}
 	_server.send_message_to_client_with_code(_client, "315", "* :End of /WHO list");
 }

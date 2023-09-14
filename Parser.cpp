@@ -74,24 +74,10 @@ void Parser::what_is_this()
             cmd_who();
         else if(this->_tokens[0] == "WHOIS")
             cmd_whois();
-    //     else if(this->_tokens[0] == "LIST")
-    //         cmd_list();
-    //     else if(this->_tokens[0] == "NAMES")
-    //         cmd_names();
-    //     else if(this->_tokens[0] == "HELP")
-    //         cmd_help();
-    //     else if(this->_tokens[0] == "TIME")
-    //         cmd_time();
-    //     else if(this->_tokens[0] == "VERSION")
-    //         cmd_version();
-    //     else if(this->_tokens[0] == "MOTD")
-    //         cmd_motd();
-    //     else if(this->_tokens[0] == "EXIT")
-    //         cmd_exit();
     }
     catch(const std::exception& e)
     {
-        _server.send_message_to_fd(this->_client.getFd(), e.what());
+        _server.send_message_to_fd_buffer(_client, e.what());
     }
 
 }
@@ -108,42 +94,6 @@ void Parser::cmd_cap()
 {
     if(this->_tokens[1] == "LS")
     {
-        this->_server.send_message_to_fd(this->_client.getFd(), ":!@" + this->_server.getHostname() + " CAP * LS :End of CAP LS negotiation\n");
+        this->_server.send_message_to_fd_buffer(_client, ":!@" + this->_server.getHostname() + " CAP * LS :End of CAP LS negotiation\n");
     }
-    // else if (this->_tokens[1] == "END")
-    // {
-    //     this->_server.send_message_to_fd(this->_client.getFd(), "CAP * END :End of CAP LS negotiation\n");
-    // }
-    // else
-    //     throw std::invalid_argument("Wrong argument\n");
-}
-
-// void Parser::cmd_names()
-// {
-//     this->_client->showNames(this->_tokens[1]);
-// }
-
-void Parser::cmd_list()
-{
-    this->_server.showChannels();
-}
-
-void Parser::cmd_help()
-{
-    //필요없을듯
-}
-
-void Parser::cmd_version()
-{
-
-}
-
-void Parser::cmd_motd()
-{
-
-}
-
-void Parser::cmd_exit()
-{
-
 }

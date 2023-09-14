@@ -29,7 +29,7 @@ Client &Client::operator=(const Client &f)
 		this->servername = f.servername;
 		this->realname = f.realname;
 		this->mode = f.mode;
-		this->message_buffer = f.message_buffer;
+		this->recv_buffer = f.recv_buffer;
 	}
 	return (*this);
 }
@@ -54,8 +54,20 @@ void Client::joinChannel(const std::string &name, const std::string &key)
 			channel->addClient(*this);
 
 	}
-	// this->server.send_message_to_fd(this->getFd(), );
 }
+
+void Client::append_send_buffer(const std::string &str)
+{
+	this->send_buffer += str;
+}
+
+std::string Client::get_send_buffer_and_flush(void)
+{
+	std::string ret = this->send_buffer;
+	this->send_buffer.clear();
+	return (ret);
+}
+
 
 /*//////////////////////////////////////////////////////////////////////////////*/
 /*//                                                                          //*/
@@ -105,7 +117,7 @@ void Client::setChannel(Channel* channel)
 
 void Client::setMessageBuffer(const std::string &message_buffer)
 {
-	this->message_buffer = message_buffer;
+	this->recv_buffer = message_buffer;
 }
 
 
@@ -169,7 +181,7 @@ Channel* Client::getChannel(void) const
 
 std::string Client::getMessageBuffer(void) const
 {
-	return (this->message_buffer);
+	return (this->recv_buffer);
 }
 
 

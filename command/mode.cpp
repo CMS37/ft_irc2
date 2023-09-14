@@ -198,7 +198,7 @@ void Parser::cmd_mode_user(const std::vector<std::string> &str)
 		// else if (str[1] == "-i")
 		// 	// _client->setHostname(); 
 		msg.append(":" + _client.getNickname() + "!" + _client.getUsername() + "@" + _client.getHostname() + " MODE " + _client.getNickname() + " " + str[1] + "\r\n");
-		this->_server.send_message_to_fd(_client.getFd(), msg);
+		this->_server.send_message_to_fd_buffer(_client, msg);
 	}
 	else
 		this->_server.send_message_to_client_with_code(_client, "502", " :Cant change mode for other users");
@@ -221,7 +221,7 @@ void Parser::mode_list_channel(const std::vector<std::string> &str)
 		msg.append(" ");
 	}
 	msg.append("\r\n");
-	this->_server.send_message_to_fd(_client.getFd(), msg);
+	this->_server.send_message_to_fd_buffer(_client, msg);
 }
 
 void Parser::cmd_mode(const std::string &mode)

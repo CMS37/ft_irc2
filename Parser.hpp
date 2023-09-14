@@ -39,13 +39,9 @@ class Parser
         void cmd_nick();
         void cmd_part();
         void cmd_user();
-        void cmd_names();
         void cmd_privmsg();
         void cmd_quit();
-        void cmd_help();
         void cmd_time();
-        void cmd_version();
-        void cmd_motd();
         void cmd_invite();
         void cmd_kick();
         void cmd_topic();
@@ -53,7 +49,6 @@ class Parser
         void cmd_mode_user(const std::vector<std::string> &str);
         void cmd_mode_channel(const std::vector<std::string> &str);
         void mode_list_channel(const std::vector<std::string> &str);
-        void cmd_exit();
         void cmd_pass();
         void cmd_who();
         void cmd_whois();
