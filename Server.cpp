@@ -257,7 +257,6 @@ void Server::run(void)
 			
 			if(fds[i].revents & POLLOUT)
 			{
-				// std::cout << "POLLOUT\n";
 				send_message(fds[i].fd);
 			}
 		}
