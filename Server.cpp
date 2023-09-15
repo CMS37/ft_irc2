@@ -231,6 +231,8 @@ void Server::run(void)
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port); // 포트번호
 	addr.sin_addr.s_addr = INADDR_ANY; // IP주소(INADDR_ANY: 모든 IP로부터의 연결을 허용(htol으로 변환x))
+	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &addr, sizeof(addr)) == -1)
+		throw std::runtime_error("socket:Cant reuse address");
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("socket:blocking error");
 	if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
