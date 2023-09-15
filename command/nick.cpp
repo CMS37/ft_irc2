@@ -24,7 +24,7 @@ void Parser::cmd_nick()
 			this->_client.setNickname(nickname);
 		}
 		msg.append("NICK " + this->_client.getNickname() + "\r\n");
-		this->_server.send_message_to_fd(this->_client.getFd(), msg);
+		this->_server.send_message_to_fd_buffer(this->_client, msg);
 		this->_server.registrate(this->_client);
     }
 }

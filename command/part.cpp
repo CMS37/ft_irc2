@@ -3,7 +3,7 @@
 void Parser::cmd_part()
 {
     if(!this->_client.getIsRegistered())
-        this->_server.send_message_to_fd(this->_client.getFd(), "451 :You have not registered\n");
+        this->_server.send_message_to_fd_buffer(this->_client, "451 :You have not registered\n");
     if(this->_tokens.size() != 2)
     {
         this->_server.send_message_to_client_with_code(this->_client, "461", "PART :Not enough parameters");

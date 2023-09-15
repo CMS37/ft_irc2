@@ -9,7 +9,7 @@ void Parser::cmd_time()
 		msg = std::string(ctime(&startTime)) + "; check the time on the server \"" + _server.getHostname() + "\"";
 	else
 		//유저가 서버에 접속한시간?  (<USER> TIME <SERVER>)?!
-	this->_server.send_message_to_fd(this->_client.getFd(), msg);
+	this->_server.send_message_to_fd_buffer(this->_client, msg);
 }
 
 
