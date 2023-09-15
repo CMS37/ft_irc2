@@ -85,7 +85,7 @@ void Server::accept_client(void)
 			struct pollfd new_fd;
 			
 			new_fd.fd = client_fd;
-			new_fd.events = POLLIN;
+			new_fd.events = POLLIN | POLLOUT;
 			new_fd.revents = 0;
 			fds.push_back(new_fd);
 
@@ -257,7 +257,7 @@ void Server::run(void)
 			
 			if(fds[i].revents & POLLOUT)
 			{
-				std::cout << "POLLOUT\n";
+				// std::cout << "POLLOUT\n";
 				send_message(fds[i].fd);
 			}
 		}
@@ -393,7 +393,7 @@ void Server::send_message_to_fd_buffer(Client &cli, std::string message)
 	// send(fd, message.c_str(), message.length(), 0);
 	
 	cli.append_send_buffer(message);
-	this->fds[cli.getFd()].events |= POLLOUT;
+	// this->fds[cli.getFd()].events |= POLLOUT;
 }
 
 void Server::send_message_to_client_with_code(Client &cli, std::string code, std::string message)
@@ -460,5 +460,5 @@ void Server::send_message(int fd)
 	if(message.empty())
 		return;
 	send(fd, message.c_str(), message.length(), 0);
-	this->fds[fd].events &= ~POLLOUT;
+	// this->fds[fd].events &= ~POLLOUT;
 }
