@@ -11,13 +11,18 @@ void Parser::cmd_privmsg()
     std::string message;
     Channel &channel = this->_server.getChannelset(target_channel);
 
+    if (channel.getName() != target_channel)
+    {
+        this->_server.send_message_to_fd_buffer(this->_client, "401 :No such nick/channel\n");
+        return;
+    }
+
     for(unsigned int i = 2; i < this->_tokens.size(); i++)
     {
         if (channel.is_bot())
         {
             if (this->_tokens[2] == ":!ban" && i != 2)
             {
-                std::cout << "check" << std::endl;
                 channel.getBot()->addban(this->_tokens[i]);
                 std::string msg = ":bot!bot@bot PRIVMSG " + target_channel + " :Ban " + this->_tokens[i] + "\r\n";
                 this->_server.send_message_to_channel(target_channel, msg);
@@ -37,7 +42,6 @@ void Parser::cmd_privmsg()
         if(i < this->_tokens.size() - 1)
             message += " ";
     }
-
     Client* target_client = this->_server.getClient(target_channel);
     if(target_client)
     {

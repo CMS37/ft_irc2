@@ -37,7 +37,6 @@ class Channel
 		Channel &operator=(const Channel &f);
 
 	public:
-		Channel(const std::string &name);
 		Channel(const std::string &name, const std::string &key);
 		~Channel();
 

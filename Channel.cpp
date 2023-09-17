@@ -1,18 +1,5 @@
 #include "Channel.hpp"
 
-Channel::Channel(const std::string &name) : name(name)
-{
-	if (name[0] == '+')
-		invite_only = true;
-	else
-		invite_only = false;
-	use_key = false;
-	topic_set = false;
-	limit_set = false;
-	topic = "";
-	bot_set = false;
-}
-
 Channel::Channel(const std::string &name, const std::string &key) : name(name), key(key)
 {
 	if (!key.empty())
@@ -23,10 +10,10 @@ Channel::Channel(const std::string &name, const std::string &key) : name(name), 
 		invite_only = true;
 	else
 		invite_only = false;
-
 	topic_set = false;
 	limit_set = false;
 	topic = "";
+	bot_set = false;
 }
 
 Channel::~Channel()
