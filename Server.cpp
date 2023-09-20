@@ -207,7 +207,6 @@ bool Server::check_channel(const std::string &channel)
 {
 	for (std::map<std::string, Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 	{
-		//채널이름넣어줄때 널문자도 넣어줘야대나....길이가다르네..
 		if (!strncmp(it->first.c_str(), channel.c_str(),channel.length()))
 			return (true);
 	}
@@ -253,11 +252,10 @@ void Server::run(void)
 			{
 				if (fds[i].fd == this->fd) // 새로운 클라이언트 접속 요청
 					accept_client();
-				else //기존 클라이언트 이벤트 발생ㅓ
+				else //기존 클라이언트 이벤트 발생
 					read_client_data(i);
 			}
-			
-			if(fds[i].revents & POLLOUT)
+			else if(fds[i].revents & POLLOUT)
 			{
 				send_message(fds[i].fd);
 			}
@@ -457,9 +455,10 @@ void Server::send_message(int fd)
 {
 	Client *cli = this->clients[fd];
 
+	if (cli == NULL)
+		return ;
 	std::string message = cli->get_send_buffer_and_flush();
 	if(message.empty())
-		return;
+		return ;
 	send(fd, message.c_str(), message.length(), 0);
-	// this->fds[fd].events &= ~POLLOUT;
 }
