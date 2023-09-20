@@ -11,12 +11,6 @@ void Parser::cmd_privmsg()
     std::string message;
     Channel &channel = this->_server.getChannelset(target_channel);
 
-    if (channel.getName() != target_channel)
-    {
-        this->_server.send_message_to_fd_buffer(this->_client, "401 :No such nick/channel\n");
-        return;
-    }
-
     for(unsigned int i = 2; i < this->_tokens.size(); i++)
     {
         if (channel.is_bot())
